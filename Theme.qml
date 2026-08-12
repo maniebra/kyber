@@ -13,18 +13,18 @@ Singleton {
     // Pure neutral grey stack — no hue tint. Colour enters only via accent.
     readonly property color bg: "#0c0c0c"
     readonly property color panel: "#e6111111"
-    readonly property color surface: "#c2141414"
-    readonly property color surfaceAlt: "#cc1a1a1a"
-    readonly property color surfaceHover: "#dd242424"
+    readonly property color surface: "#d9242424"
+    readonly property color surfaceAlt: "#e02c2c2c"
+    readonly property color surfaceHover: "#ee383838"
     // Recessed well: widgets sitting *inside* a panel read as cut into it, so
     // they go darker than the slab, not lighter.
-    readonly property color well: "#cc060606"
+    readonly property color well: "#e6040404"
     // --- text: real hierarchy, not three shades of the same grey -----------
     readonly property color text: "#f0f0f0"
     readonly property color subtext: "#a8a8a8"
     readonly property color faint: "#757575"
     // --- accent: one light blue, everything else stays grey -----------------
-    readonly property color cyan: "#7dc4f5"
+    readonly property color cyan: "#45b4ff"
     readonly property color magenta: "#b0a8a8"
     readonly property color violet: "#a8a8b0"
     readonly property color lime: "#a8b0a8"

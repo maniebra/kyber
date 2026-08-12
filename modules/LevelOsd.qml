@@ -164,20 +164,40 @@ PanelWindow {
                 anchors.verticalCenter: parent.verticalCenter
 
                 text: root.glyph
-                color: Theme.text
+                color: Theme.accent
                 font.family: Theme.fontIcon
                 font.pixelSize: 16
+
+                // Offset ghost of the same glyph: a hair of misregistration,
+                // the way a cheap panel fringes. Faint enough to read as glow
+                // until you look straight at it.
+                Text {
+                    x: 1.5
+                    y: -0.5
+                    text: parent.text
+                    color: Theme.alpha(Theme.red, 0.45)
+                    font: parent.font
+                    z: -1
+                }
             }
 
+            // Squared off, not a pill: the readout is an instrument, and the
+            // segments below only read as cells against a straight rail.
             Rectangle {
+                id: rail
+
                 anchors.verticalCenter: parent.verticalCenter
 
                 width: parent.width - 28 - parent.spacing
-                height: 5
-                radius: 2.5
-                color: Theme.alpha(Theme.text, 0.1)
+                height: 8
+                radius: 1
+                color: Theme.alpha(Theme.text, 0.08)
+
+                readonly property int cells: 24
 
                 Rectangle {
+                    id: charge
+
                     width: parent.width * Math.max(0, Math.min(1, root.level))
                     height: parent.height
                     radius: parent.radius
@@ -191,9 +211,44 @@ PanelWindow {
                         anchors.right: parent.right
                         width: Math.min(parent.width, 48)
                         height: parent.height + 6
-                        radius: height / 2
+                        radius: 1
                         color: Theme.alpha(Theme.accent, 0.22)
                         z: -1
+                    }
+                }
+
+                // Hot leading edge — the meniscus of the charge, and the one
+                // bit of the sheet that's brighter than the accent.
+                Rectangle {
+                    x: charge.width - 1
+                    width: 2
+                    height: parent.height + 4
+                    anchors.verticalCenter: parent.verticalCenter
+                    color: Qt.lighter(Theme.accent, 1.6)
+                    visible: charge.width > 1
+                }
+
+                // Cut the rail into cells. Drawn over both the track and the
+                // charge so the fill reads as segments lighting up rather than
+                // a bar growing.
+                Row {
+                    anchors.fill: parent
+                    spacing: 0
+
+                    Repeater {
+                        model: rail.cells
+
+                        Item {
+                            width: rail.width / rail.cells
+                            height: rail.height
+
+                            Rectangle {
+                                anchors.right: parent.right
+                                width: 1
+                                height: parent.height
+                                color: Theme.panel
+                            }
+                        }
                     }
                 }
             }

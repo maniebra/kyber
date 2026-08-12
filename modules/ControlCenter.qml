@@ -94,31 +94,32 @@ PanelWindow {
 
     // Notch: hangs off the right end of the bar, under the status island, square
     // on top, rounded below, one concave flare on its open side.  ──\____|
+    // Pinned to the bar's edge rather than to the sheet: riding the sheet would
+    // drag the flare up behind the bar for the whole slide.
+    FlareCorner {
+        anchors.right: dropdown.left
+        anchors.rightMargin: -1
+        anchors.top: parent.top
+        size: 16 * root.reveal
+        z: 1
+    }
+
     Item {
         id: dropdown
 
-        anchors {
-            top: parent.top
-            right: parent.right
-        }
+        anchors.right: parent.right
 
         width: panel.width
         height: panel.height
 
-        opacity: root.reveal
+        // Slides down out of the bar and back up into it. This window starts at
+        // the bar's bottom edge, so a negative y parks the sheet behind the bar
+        // — no clip needed, and nothing pops.
+        y: -height * (1 - root.reveal)
 
-        // drips out of the corner it hangs from
-        transformOrigin: Item.TopRight
-        scale: 0.94 + 0.06 * root.reveal
-
-        // grows with the reveal, so it opens in place instead of scaling in
-        FlareCorner {
-            anchors.right: panel.left
-            anchors.rightMargin: -1
-            anchors.top: parent.top
-            size: 16 * root.reveal
-            z: 1
-        }
+        // Trails the slide (the 1.4x, clamped) so it is most of the way out
+        // before it reads as solid, instead of fading in place.
+        opacity: Math.max(0, 1 - (1 - root.reveal) * 1.4)
 
         GlassPanel {
             id: panel

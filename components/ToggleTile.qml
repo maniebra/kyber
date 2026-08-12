@@ -24,6 +24,12 @@ Rectangle {
             ? Theme.surfaceHover
             : Theme.alpha(Theme.surface, 0.85)
 
+    // A hairline as well as the lighter fill: the compositor's blur varies with
+    // what's behind the panel, and on a bright wallpaper the fill step alone
+    // stops reading.
+    border.width: 1
+    border.color: active ? Theme.alpha(accent, 0.35) : Theme.rimSoft
+
     antialiasing: true
     scale: mouse.pressed ? 0.975 : 1
 
