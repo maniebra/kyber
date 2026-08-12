@@ -23,6 +23,7 @@ ShellRoot {
             ControlCenter { screen: modelData; screenName: modelData.name }
             Launcher { screen: modelData; screenName: modelData.name }
             Dashboard { screen: modelData; screenName: modelData.name }
+            KeyboardOsd { screen: modelData; screenName: modelData.name }
         }
     }
 

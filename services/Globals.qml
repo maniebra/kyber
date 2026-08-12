@@ -2,6 +2,8 @@ pragma Singleton
 
 import Quickshell
 import Quickshell.Hyprland
+import Quickshell.Io
+import QtQuick
 
 // Shared UI state. Every window binds against this instead of talking to
 // its siblings.
@@ -24,6 +26,36 @@ Singleton {
     // Same idea for the left rail, which the app menu slides out of.
     property real railNotchY: 0
     property real railNotchHeight: 0
+
+    // Active keyboard layout, e.g. "English (US)". Hyprland only announces it on
+    // change, so the initial value comes from a one-shot hyprctl read.
+    property string keyboardLayout: ""
+    // Bumped on every real switch; the OSD watches this rather than the name, so
+    // switching back to a layout still shows.
+    property int keyboardLayoutTick: 0
+
+    Process {
+        running: true
+        command: ["hyprctl", "devices", "-j"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const kbs = JSON.parse(text).keyboards;
+                root.keyboardLayout =
+                    (kbs.find(k => k.main) ?? kbs[0])?.active_keymap ?? "";
+            }
+        }
+    }
+
+    Connections {
+        target: Hyprland
+
+        function onRawEvent(event) {
+            if (event.name !== "activelayout")
+                return;
+            root.keyboardLayout = event.data.split(",").slice(1).join(",");
+            root.keyboardLayoutTick++;
+        }
+    }
 
     readonly property string focusedScreen:
         Hyprland.focusedMonitor?.name ?? ""

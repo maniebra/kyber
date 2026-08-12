@@ -1,6 +1,4 @@
 import Quickshell
-import Quickshell.Hyprland
-import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Widgets
 import QtQuick
@@ -143,46 +141,19 @@ PanelWindow {
         }
 
         // ---- keyboard layout ----------------------------------------------
-        // Hyprland only announces the layout when it changes, so the initial
-        // value comes from a one-shot hyprctl read.
         Text {
-            id: kbd
-
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: menuButton.bottom
             anchors.topMargin: 8
 
-            property string layout: ""
-
-            // "English (US)" -> "EN", "Persian" -> "FA"
-            text: layout.slice(0, 2).toUpperCase()
+            // "English (US)" -> "EN", "Persian" -> "PE"
+            text: Globals.keyboardLayout.slice(0, 2).toUpperCase()
             visible: text !== ""
 
             font.family: Theme.font
             font.pixelSize: Theme.fontSizeSm
             font.bold: true
             color: Theme.subtext
-
-            Process {
-                running: true
-                command: ["hyprctl", "devices", "-j"]
-                stdout: StdioCollector {
-                    onStreamFinished: {
-                        const kb = JSON.parse(text).keyboards.find(k => k.main)
-                            ?? JSON.parse(text).keyboards[0];
-                        kbd.layout = kb?.active_keymap ?? "";
-                    }
-                }
-            }
-
-            Connections {
-                target: Hyprland
-
-                function onRawEvent(event) {
-                    if (event.name === "activelayout")
-                        kbd.layout = event.data.split(",").slice(1).join(",");
-                }
-            }
         }
 
         // ---- dock ---------------------------------------------------------
