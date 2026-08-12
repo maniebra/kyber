@@ -28,7 +28,9 @@ Item {
         : Battery.available && Battery.low ? "low"
         : "idle"
 
-    readonly property color tint: ({
+    // While the peek is out, the dot is the thing holding it open, so it goes
+    // accent and breathes regardless of what it was reporting a moment ago.
+    readonly property color tint: Globals.mediaPeek ? Theme.accent : ({
         "notify": Theme.accent,
         "dnd": Theme.faint,
         "media": Theme.accent,
@@ -37,8 +39,32 @@ Item {
         "idle": Theme.faint
     })[mode]
 
+    // Faster and shallower than the resting breath: this one says "held", not
+    // "alive". Overrides the per-mode animations below by running on the item
+    // rather than on the dot inside it.
+    SequentialAnimation on opacity {
+        running: Globals.mediaPeek
+        loops: Animation.Infinite
+        alwaysRunToEnd: true
+
+        NumberAnimation { to: 0.45; duration: 620; easing.type: Easing.InOutSine }
+        NumberAnimation { to: 1; duration: 620; easing.type: Easing.InOutSine }
+    }
+
     implicitWidth: 12
     implicitHeight: 14
+
+    // The dot is what stands for the media, so it is what reveals it. Padded a
+    // few pixels past the dot's own 12x14 — a bare 4px dot is not a hit target.
+    Item {
+        anchors.centerIn: parent
+        width: parent.width + 10
+        height: parent.height + 6
+
+        HoverHandler {
+            onHoveredChanged: Globals.mediaDotHovered = hovered
+        }
+    }
 
     // Arrivals only. Dismissing a notification also changes `count`, and a dot
     // that blooms when you clear the queue is reporting the wrong event.

@@ -48,6 +48,13 @@ Rectangle {
         id: layout
         anchors.centerIn: parent
         spacing: 6
+
+        // Above the chip's own MouseArea, which is declared after it and would
+        // otherwise swallow every hover event before the content sees it — the
+        // clock's status dot needs its own hover. The MouseArea still gets the
+        // clicks: none of the content accepts them, and a HoverHandler is
+        // passive, so the chip's hover keeps working too.
+        z: 1
     }
 
     // Armed marker: a short accent rule under a chip that is holding state.

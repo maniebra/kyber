@@ -18,10 +18,10 @@ PanelWindow {
 
     readonly property var player: Player.current
 
-    // The chip's hover, plus the sheet's own, so the pointer can cross the gap
+    // The dot's hover, plus the sheet's own, so the pointer can cross the gap
     // between them. Nothing to show without a player.
     readonly property bool wantOpen:
-        (Globals.clockHovered || sheetHover.hovered)
+        (Globals.mediaDotHovered || sheetHover.hovered)
         && Globals.focusedScreen === screenName
         && player !== null
         // a click opened the real thing — the peek gets out of the way
@@ -68,6 +68,14 @@ PanelWindow {
     // click on the desktop for as long as the peek is up.
     mask: Region {
         item: sheet
+    }
+
+    Binding {
+        target: Globals
+        property: "mediaPeek"
+        value: root.shouldOpen
+        when: Globals.focusedScreen === root.screenName
+        restoreMode: Binding.RestoreBindingOrValue
     }
 
     // MPRIS position is pull-only; nothing pushes it. Poll while the sheet is
