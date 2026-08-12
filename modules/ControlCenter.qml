@@ -115,7 +115,7 @@ PanelWindow {
         // Slides down out of the bar and back up into it. This window starts at
         // the bar's bottom edge, so a negative y parks the sheet behind the bar
         // — no clip needed, and nothing pops.
-        y: -height * (1 - root.reveal)
+        y: -height * Math.max(0, 1 - root.reveal)
 
         // Trails the slide (the 1.4x, clamped) so it is most of the way out
         // before it reads as solid, instead of fading in place.

@@ -33,6 +33,39 @@ Rectangle {
     antialiasing: true
     scale: mouse.pressed ? 0.975 : 1
 
+    // Status edge: a lit strip down the tile's leading side, the way a rack
+    // unit shows which channel is live. Collapses to nothing when off, so an
+    // idle tile stays a plain slab.
+    Rectangle {
+        anchors.left: parent.left
+        anchors.leftMargin: 1
+        anchors.verticalCenter: parent.verticalCenter
+
+        width: 2
+        height: root.active ? parent.height - 14 : 0
+        radius: 1
+        color: root.accent
+
+        Behavior on height { Morph { duration: Theme.animMed } }
+    }
+
+    // Corner tick, top right — a registration mark, not decoration: it only
+    // shows on the live tile.
+    Rectangle {
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.margins: 6
+
+        width: 5
+        height: 5
+        radius: 1
+        rotation: 45
+        color: root.accent
+        opacity: root.active ? 1 : 0
+
+        Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
+    }
+
     Behavior on color { ColorAnimation { duration: Theme.animFast } }
     Behavior on scale { Morph { duration: Theme.animMed } }
 
@@ -46,7 +79,10 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             width: 32
             height: 32
-            radius: Theme.radiusSm
+
+            // Squarer than the tile that holds it — an instrument face set into
+            // a panel, rather than a pill inside a pill.
+            radius: 5
 
             color: root.active ? root.accent : Theme.alpha(Theme.text, 0.08)
             antialiasing: true
@@ -78,12 +114,14 @@ Rectangle {
             }
 
             Text {
-                text: root.sublabel
+                // A machine readout: mono, small caps, wide tracking. The
+                // label above stays human — only the state line is telemetry.
+                text: root.sublabel.toUpperCase()
                 visible: text !== ""
-                color: root.active ? Theme.subtext : Theme.faint
-                font.family: Theme.font
-                font.pixelSize: 10
-                font.letterSpacing: Theme.tracking
+                color: root.active ? root.accent : Theme.faint
+                font.family: Theme.fontMono
+                font.pixelSize: 9
+                font.letterSpacing: Theme.trackingWide
                 elide: Text.ElideRight
                 Behavior on color { ColorAnimation { duration: Theme.animFast } }
                 width: parent.width

@@ -142,7 +142,7 @@ PanelWindow {
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
-        anchors.topMargin: -height * root.offsetScale
+        anchors.topMargin: -height * Math.max(0, root.offsetScale)
 
         width: 236
         height: 46
