@@ -30,6 +30,13 @@ Item {
         id: row
 
         anchors.verticalCenter: parent.verticalCenter
+
+        // All caps, no descenders: Qt centres the line box, which reserves
+        // descender space this string never uses, so the glyphs ride high.
+        // SF Pro's box differs from the mono face the workspace numbers use,
+        // hence a nudge here rather than a shared rule.
+        anchors.verticalCenterOffset: 1
+
         anchors.left: parent.left
         anchors.leftMargin: 4
 

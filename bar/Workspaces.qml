@@ -35,7 +35,11 @@ Item {
         entries.findIndex(e => e.id === activeId)
 
     implicitWidth: row.implicitWidth
-    implicitHeight: row.implicitHeight
+
+    // Matches the other bar cells' height rather than hugging the buttons: a
+    // Row lays its children out top-aligned, so a shorter cell here sat two
+    // pixels high against the window title beside it.
+    implicitHeight: 22
 
     // One pill that slides to whichever button is active, instead of each
     // button lighting its own background — the travel is the transition.
@@ -47,7 +51,7 @@ Item {
         x: target?.x ?? 0
         width: target?.width ?? 0
         height: target?.height ?? 0
-        y: 0
+        y: row.y
 
         radius: Theme.radiusSm
         antialiasing: true
@@ -60,6 +64,7 @@ Item {
     Row {
         id: row
 
+        anchors.verticalCenter: parent.verticalCenter
         spacing: 3
 
         Repeater {

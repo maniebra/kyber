@@ -39,7 +39,9 @@ Singleton {
     readonly property color rimSoft: Qt.rgba(1, 1, 1, 0.08)
     readonly property color shade: Qt.rgba(0, 0, 0, 0.28)
     // --- type --------------------------------------------------------------
-    readonly property string font: "Inter"
+    // "SF UI" is the old name for what ships here as SF Pro; Text is the
+    // small-size optical cut, which is what a bar and a panel are made of.
+    readonly property string font: "SF Pro Text"
     readonly property string fontMono: "JetBrainsMono Nerd Font"
     // Lucide, not the Nerd Font's Material glyphs: one consistent stroke weight
     // and optical size across every icon. Ships as ~/.local/share/fonts/lucide.ttf
