@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"visible\\\\|anchors {\\\\|MouseArea\\\\|onClicked\\\\|shouldOpen\\\\|offsetScale:\" modules/ControlCenter.qml modules/Launcher.qml | head -40; echo ===; grep -n \"dispatch\" /usr/lib/qt6/qml/Quickshell/Hyprland/quickshell-hyprland.qmltypes)",
+      "Read(//usr/lib/qt6/qml/Quickshell/Hyprland/**)",
+      "Bash(hyprctl dispatch *)",
+      "Bash(hyprctl activeworkspace *)",
+      "Bash(qs -c kyber ipc call shell toggleDashboard)",
+      "Bash(hyprctl layers *)",
+      "Bash(qs -c kyber ipc call shell close)",
+      "Bash(qs -c kyber ipc call shell toggleLauncher)",
+      "Bash(qs -c kyber ipc call shell toggleControlCenter)",
+      "Bash(fc-list)",
+      "Bash(python3 -c ' *)"
+    ]
+  }
+}
