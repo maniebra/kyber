@@ -27,6 +27,10 @@ Singleton {
     property real railNotchY: 0
     property real railNotchHeight: 0
 
+    // Clock chip hover, which the media popover hangs off. The popover ORs its
+    // own hover in, so the pointer can travel from the chip onto the sheet.
+    property bool clockHovered: false
+
     // Active keyboard layout, e.g. "English (US)". Hyprland only announces it on
     // change, so the initial value comes from a one-shot hyprctl read.
     property string keyboardLayout: ""

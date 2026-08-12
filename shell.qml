@@ -24,6 +24,8 @@ ShellRoot {
             Launcher { screen: modelData; screenName: modelData.name }
             Dashboard { screen: modelData; screenName: modelData.name }
             KeyboardOsd { screen: modelData; screenName: modelData.name }
+            MediaPopover { screen: modelData; screenName: modelData.name }
+            LevelOsd { screen: modelData; screenName: modelData.name }
         }
     }
 

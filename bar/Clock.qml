@@ -17,6 +17,8 @@ Chip {
         precision: SystemClock.Minutes
     }
 
+    onHoveredChanged: Globals.clockHovered = hovered
+
     // left: dashboard sheet, right: control center
     onClicked: mouse => mouse.button === Qt.RightButton
         ? Globals.toggleControlCenter()

@@ -11,6 +11,26 @@ Singleton {
     property real value: 1        // 0..1
     property bool available: false
 
+    // Sysfs is the fast path: the keyboard's brightness keys run brightnessctl
+    // directly, and a 5s poll would show the OSD long after the key. Watching
+    // the file picks those up the moment they land. The poll below stays as the
+    // fallback for machines where this path doesn't exist.
+    FileView {
+        path: "/sys/class/backlight/intel_backlight/brightness"
+        watchChanges: true
+
+        onFileChanged: reload()
+        onLoaded: {
+            const cur = parseInt(text());
+            if (root.max > 0 && cur >= 0) {
+                root.available = true;
+                root.value = cur / root.max;
+            }
+        }
+    }
+
+    property int max: 0
+
     Timer {
         interval: 5000
         running: true
@@ -36,6 +56,7 @@ Singleton {
                     return;
 
                 root.available = true;
+                root.max = max;
                 root.value = cur / max;
             }
         }
