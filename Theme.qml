@@ -52,8 +52,8 @@ Singleton {
     // --- metrics -----------------------------------------------------------
     readonly property int barHeight: 30
     readonly property int barMargin: 0
-    readonly property int radius: 14
-    readonly property int radiusSm: 9
+    readonly property int radius: 8
+    readonly property int radiusSm: 4
     readonly property int gap: 6
     readonly property int railWidth: 36
     readonly property int animFast: 110

@@ -50,6 +50,21 @@ Rectangle {
         spacing: 6
     }
 
+    // Armed marker: a short accent rule under a chip that is holding state.
+    // Grows from the middle, so it reads as the cell latching rather than as a
+    // second border appearing.
+    Rectangle {
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 1
+
+        width: root.active ? parent.width - 10 : 0
+        height: 1
+        color: root.accent
+
+        Behavior on width { Morph { duration: Theme.animMed } }
+    }
+
     MouseArea {
         id: mouse
 

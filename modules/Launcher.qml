@@ -181,6 +181,15 @@ PanelWindow {
                 anchors.fill: parent
             }
 
+            Brackets {
+                anchors.margins: 3
+                topLeft: false
+                topRight: true
+                bottomLeft: false
+                bottomRight: true
+                z: 200
+            }
+
             // ---- search field --------------------------------------------
             Item {
                 id: field
@@ -334,13 +343,11 @@ PanelWindow {
                         anchors.rightMargin: 12
                         spacing: 12
 
-                        IconImage {
+                        AppIcon {
                             anchors.verticalCenter: parent.verticalCenter
-                            implicitSize: 30
-                            source: Quickshell.iconPath(row.modelData.icon, "application-x-executable")
-                            smooth: true
-                            mipmap: true
-                            antialiasing: true
+                            size: 30
+                            name: row.modelData.icon
+                            glyph: ""
                         }
 
                         Column {

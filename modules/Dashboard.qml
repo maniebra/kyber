@@ -135,6 +135,14 @@ PanelWindow {
             // swallow clicks so click-away doesn't fire
         }
 
+        Brackets {
+            anchors.margins: 4
+            topLeft: false
+            bottomLeft: true
+            bottomRight: true
+            z: 200
+        }
+
         // ---- reusable bits ------------------------------------------------
         component Card: Rectangle {
             radius: 14

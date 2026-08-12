@@ -105,16 +105,14 @@ PanelWindow {
 
                     spacing: 11
 
-                    IconImage {
+                    AppIcon {
                         anchors.verticalCenter: parent.verticalCenter
-                        implicitSize: 26
-                        visible: source !== ""
-                        source: toast.modelData.image !== ""
-                            ? toast.modelData.image
-                            : Quickshell.iconPath(toast.modelData.appIcon, true)
-                        smooth: true
-                        mipmap: true
-                        antialiasing: true
+                        size: 26
+                        source: toast.modelData.image
+                        name: toast.modelData.image !== ""
+                            ? ""
+                            : toast.modelData.appIcon
+                        glyph: ""
                     }
 
                     Column {

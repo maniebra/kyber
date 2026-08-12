@@ -178,16 +178,11 @@ PanelWindow {
                     color: tap.containsMouse ? Theme.surfaceHover : "transparent"
                     Behavior on color { ColorAnimation { duration: Theme.animFast } }
 
-                    IconImage {
+                    AppIcon {
                         anchors.centerIn: parent
-                        implicitSize: 20
-                        source: Quickshell.iconPath(
-                            item.modelData.entry?.icon ?? "",
-                            "application-x-executable"
-                        )
-                        smooth: true
-                        mipmap: true
-                        antialiasing: true
+                        size: 20
+                        name: item.modelData.entry?.icon ?? ""
+                        glyph: ""
                     }
 
                     // Running indicator on the rail's outer edge — the dock is

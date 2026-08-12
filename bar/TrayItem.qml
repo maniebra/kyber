@@ -3,6 +3,7 @@ import Quickshell.Widgets
 import QtQuick
 
 import "root:/"
+import "root:/components"
 
 Rectangle {
     id: root
@@ -16,14 +17,12 @@ Rectangle {
     color: mouse.containsMouse ? Theme.surfaceHover : "transparent"
     Behavior on color { ColorAnimation { duration: Theme.animFast } }
 
-    IconImage {
+    AppIcon {
         anchors.centerIn: parent
 
-        implicitSize: 14
+        size: 14
         source: root.item.icon
-        smooth: true
-        mipmap: true
-        antialiasing: true
+        glyph: ""
     }
 
     MouseArea {

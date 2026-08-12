@@ -49,6 +49,47 @@ Rectangle {
         Behavior on height { Morph { duration: Theme.animMed } }
     }
 
+    // Diagonal hatch behind the live tile — the hazard fill 2077 puts under
+    // anything energised. Clipped to the tile, and faint enough to read as
+    // texture rather than as stripes.
+    Item {
+        anchors.fill: parent
+        clip: true
+        opacity: root.active ? 0.14 : 0
+        visible: opacity > 0
+
+        Behavior on opacity { NumberAnimation { duration: Theme.animMed } }
+
+        Repeater {
+            model: 22
+
+            Rectangle {
+                required property int index
+
+                width: 1
+                height: root.height * 3
+                x: index * 9 - root.height
+                y: -root.height
+                rotation: -35
+                transformOrigin: Item.TopLeft
+                color: root.accent
+            }
+        }
+    }
+
+    Brackets {
+        color: root.accent
+        inset: 3
+        arm: 7
+        topLeft: false
+        topRight: true
+        bottomLeft: true
+        bottomRight: false
+        opacity: root.active ? 1 : 0
+
+        Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
+    }
+
     // Corner tick, top right — a registration mark, not decoration: it only
     // shows on the live tile.
     Rectangle {
@@ -103,12 +144,12 @@ Rectangle {
             width: parent.width - 42 - parent.spacing
 
             Text {
-                text: root.label
+                text: root.label.toUpperCase()
                 color: Theme.text
                 font.family: Theme.font
-                font.pixelSize: 12
+                font.pixelSize: 11
                 font.weight: Font.DemiBold
-                font.letterSpacing: Theme.tracking
+                font.letterSpacing: Theme.trackingWide
                 elide: Text.ElideRight
                 width: parent.width
             }

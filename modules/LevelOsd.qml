@@ -153,6 +153,21 @@ PanelWindow {
         squareTop: true
         opacity: Math.max(0, 1 - root.offsetScale * 1.4)
 
+        Scanlines {
+            radius: sheet.radius
+            squareTop: true
+            z: 200
+        }
+
+        Brackets {
+            anchors.margins: 3
+            topLeft: true
+            topRight: false
+            bottomLeft: false
+            bottomRight: true
+            z: 201
+        }
+
         Row {
             anchors.fill: parent
             anchors.leftMargin: 16

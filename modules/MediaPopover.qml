@@ -155,6 +155,20 @@ PanelWindow {
                 Audio.volume + (event.angleDelta.y > 0 ? 0.02 : -0.02))
         }
 
+        Scanlines {
+            radius: sheet.radius
+            squareTop: true
+            z: 200
+        }
+
+        Brackets {
+            anchors.margins: 3
+            topLeft: false
+            bottomLeft: true
+            bottomRight: true
+            z: 201
+        }
+
         // Contents drag behind the sheet by a few pixels and catch up at the
         // end — surface tension, the same reason the flares overshoot.
         Row {
@@ -418,23 +432,18 @@ PanelWindow {
 
                                 Behavior on color { ColorAnimation { duration: Theme.animFast } }
 
-                                IconImage {
+                                AppIcon {
                                     anchors.centerIn: parent
-                                    implicitSize: 14
+                                    size: 14
+                                    glyph: ""
+                                    glyphColor: srcItem.selected
+                                        ? Theme.accent
+                                        : Theme.subtext
                                     opacity: srcItem.selected ? 1 : 0.55
-                                    // The fallback has to go in as the *name* —
-                                    // iconPath's fallback argument never fires
-                                    // for an empty name, and players like the
-                                    // kdeconnect bridge have no desktop entry.
-                                    source: Quickshell.iconPath(
-                                        DesktopEntries.heuristicLookup(
-                                            srcItem.modelData.desktopEntry
-                                                ?? srcItem.modelData.identity ?? ""
-                                        )?.icon || "audio-x-generic",
-                                        true
-                                    )
-                                    smooth: true
-                                    mipmap: true
+                                    name: DesktopEntries.heuristicLookup(
+                                        srcItem.modelData.desktopEntry
+                                            ?? srcItem.modelData.identity ?? ""
+                                    )?.icon ?? ""
                                 }
 
                                 MouseArea {

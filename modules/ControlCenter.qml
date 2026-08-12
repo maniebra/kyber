@@ -134,6 +134,16 @@ PanelWindow {
                 // swallow clicks so click-away doesn't fire
             }
 
+            // Registration ticks in the two corners that aren't welded to the
+            // bar. Above the content, but takes no input.
+            Brackets {
+                anchors.margins: 3
+                topLeft: false
+                bottomLeft: true
+                bottomRight: true
+                z: 201
+            }
+
         // The panel is one window with three pages side by side: main, the
         // network list, the power actions. Sub-pages slide in from the right
         // instead of pushing the main page around, so nothing reflows.
@@ -178,8 +188,18 @@ PanelWindow {
                 Rectangle {
                     width: 36
                     height: 36
-                    radius: 11
+                    radius: 5
                     color: Theme.alpha(Theme.cyan, 0.24)
+                    border.width: 1
+                    border.color: Theme.alpha(Theme.cyan, 0.45)
+
+                    Brackets {
+                        inset: 2
+                        arm: 6
+                        topLeft: true
+                        bottomRight: true
+                        strength: 1
+                    }
 
                     Text {
                         anchors.centerIn: parent
@@ -197,12 +217,28 @@ PanelWindow {
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 2
 
-                    Text {
-                        text: SysInfo.user
-                        color: Theme.text
-                        font.family: Theme.font
-                        font.pixelSize: 13
-                        font.weight: Font.DemiBold
+                    Row {
+                        spacing: 6
+
+                        Text {
+                            text: SysInfo.user.toUpperCase()
+                            color: Theme.text
+                            font.family: Theme.font
+                            font.pixelSize: 13
+                            font.weight: Font.DemiBold
+                            font.letterSpacing: Theme.trackingWide
+                        }
+
+                        // Slug, not a label: the panel states what it is the
+                        // way a terminal banner does.
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "//SYS.CTRL"
+                            color: Theme.alpha(Theme.accent, 0.7)
+                            font.family: Theme.fontMono
+                            font.pixelSize: 8
+                            font.letterSpacing: Theme.trackingWide
+                        }
                     }
 
                     Text {
@@ -560,16 +596,14 @@ PanelWindow {
                             anchors.rightMargin: 10
                             spacing: 9
 
-                            IconImage {
+                            AppIcon {
                                 anchors.verticalCenter: parent.verticalCenter
-                                implicitSize: 20
-                                visible: source !== ""
-                                source: notifRow.modelData.image !== ""
-                                    ? notifRow.modelData.image
-                                    : Quickshell.iconPath(notifRow.modelData.appIcon, true)
-                                smooth: true
-                                mipmap: true
-                                antialiasing: true
+                                size: 20
+                                source: notifRow.modelData.image
+                                name: notifRow.modelData.image !== ""
+                                    ? ""
+                                    : notifRow.modelData.appIcon
+                                glyph: ""
                             }
 
                             Column {
