@@ -24,6 +24,7 @@ ShellRoot {
             KeyboardOsd { screen: modelData; screenName: modelData.name }
             MediaPopover { screen: modelData; screenName: modelData.name }
             LevelOsd { screen: modelData; screenName: modelData.name }
+            ClipboardPanel { screen: modelData; screenName: modelData.name }
         }
     }
 
@@ -32,6 +33,10 @@ ShellRoot {
 
         function toggleLauncher(): void {
             Globals.toggleLauncher();
+        }
+
+        function toggleClipboard(): void {
+            Globals.toggleClipboard();
         }
 
         function toggleControlCenter(): void {

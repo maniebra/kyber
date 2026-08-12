@@ -12,6 +12,7 @@ Singleton {
     property bool controlCenter: false
     property bool dnd: false
     property bool dashboard: false
+    property bool clipboard: false
 
     property real notchX: 0
     property real notchWidth: 0
@@ -67,22 +68,33 @@ Singleton {
         launcher = false;
         controlCenter = false;
         dashboard = false;
+        clipboard = false;
     }
 
     function toggleLauncher() {
         controlCenter = false;
         dashboard = false;
+        clipboard = false;
         launcher = !launcher;
+    }
+
+    function toggleClipboard() {
+        controlCenter = false;
+        dashboard = false;
+        launcher = false;
+        clipboard = !clipboard;
     }
 
     function toggleControlCenter() {
         launcher = false;
+        clipboard = false;
         dashboard = false;
         controlCenter = !controlCenter;
     }
 
     function toggleDashboard() {
         launcher = false;
+        clipboard = false;
         controlCenter = false;
         dashboard = !dashboard;
     }

@@ -124,6 +124,8 @@ PanelWindow {
         }
 
         Text {
+            id: kbdLabel
+
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: menuButton.bottom
             anchors.topMargin: 8
@@ -135,6 +137,58 @@ PanelWindow {
             font.pixelSize: Theme.fontSizeSm
             font.bold: true
             color: Theme.subtext
+        }
+
+        Rectangle {
+            id: clipButton
+
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: kbdLabel.visible ? kbdLabel.bottom : menuButton.bottom
+            anchors.topMargin: 8
+
+            width: 26
+            height: 26
+            radius: Theme.radiusSm
+
+            color: Globals.clipboard
+                ? Theme.alpha(Theme.accent, 0.16)
+                : clipMouse.containsMouse
+                    ? Theme.surfaceHover
+                    : "transparent"
+
+            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+
+            Text {
+                anchors.centerIn: parent
+                text: ""
+                font.family: Theme.fontIcon
+                font.pixelSize: 14
+                color: Globals.clipboard ? Theme.accent : Theme.subtext
+
+                Behavior on color { ColorAnimation { duration: Theme.animFast } }
+            }
+
+            Text {
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.margins: 1
+
+                visible: Clipboard.history.length > 0 && !Globals.clipboard
+                text: Math.min(99, Clipboard.history.length)
+                color: Theme.faint
+                font.family: Theme.fontMono
+                font.pixelSize: 7
+            }
+
+            MouseArea {
+                id: clipMouse
+
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+
+                onClicked: Globals.toggleClipboard()
+            }
         }
 
         Column {
