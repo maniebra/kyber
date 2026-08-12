@@ -7,9 +7,6 @@ import "root:/"
 import "root:/components"
 import "root:/services"
 
-// Thin strip down the left edge, under the bar: app menu at the top, dock at
-// the bottom. It also gives the app menu a surface to slide out of — the menu's
-// flares curve into this edge the way the dropdowns' flares curve into the bar.
 PanelWindow {
     id: root
 
@@ -21,17 +18,12 @@ PanelWindow {
         bottom: true
     }
 
-    // Wider than the rail itself: the extra strip is where the fillet that
-    // rounds the bar/rail corner is drawn. It reserves only the rail's width, so
-    // windows still tile flush against the rail.
     implicitWidth: Theme.railWidth + fillet
     exclusiveZone: Theme.railWidth
     color: "transparent"
 
     readonly property int fillet: 16
 
-    // Whatever is running, in a stable order. No pins — the rail lists what
-    // exists, it isn't a bookmark bar.
     readonly property var items: {
         const running = {};
         for (const t of ToplevelManager.toplevels.values) {
@@ -49,8 +41,6 @@ PanelWindow {
             .map(k => running[k]);
     }
 
-    // Rounds the inside of the L the bar and the rail make, and carries the
-    // hairline around the turn so the two edges read as one bent line.
     FlareCorner {
         x: Theme.railWidth
         y: 0
@@ -66,15 +56,11 @@ PanelWindow {
 
         color: Theme.panel
 
-        // matches GlassSheen's film, so the joint where the menu meets the rail
-        // shows no brightness step
         Rectangle {
             anchors.fill: parent
             color: Qt.rgba(1, 1, 1, 0.05)
         }
 
-        // The rail's silhouette: only the right edge is on screen, and the menu
-        // breaks the line over the span it hangs off.
         readonly property bool notched: Globals.railNotchHeight > 0
         readonly property real notchY: notched ? Globals.railNotchY : height
         readonly property real notchEnd:
@@ -90,8 +76,6 @@ PanelWindow {
                 width: 1
                 color: Theme.rim
 
-                // starts below the fillet, whose arc already carries the line
-                // down from the bar
                 y: modelData < 0 ? root.fillet : parent.notchEnd
                 height: modelData < 0
                     ? Math.max(0, parent.notchY - root.fillet)
@@ -99,7 +83,6 @@ PanelWindow {
             }
         }
 
-        // ---- app menu ---------------------------------------------------
         Rectangle {
             id: menuButton
 
@@ -140,13 +123,11 @@ PanelWindow {
             }
         }
 
-        // ---- keyboard layout ----------------------------------------------
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: menuButton.bottom
             anchors.topMargin: 8
 
-            // "English (US)" -> "EN", "Persian" -> "PE"
             text: Globals.keyboardLayout.slice(0, 2).toUpperCase()
             visible: text !== ""
 
@@ -156,7 +137,6 @@ PanelWindow {
             color: Theme.subtext
         }
 
-        // ---- dock ---------------------------------------------------------
         Column {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
@@ -185,8 +165,6 @@ PanelWindow {
                         glyph: ""
                     }
 
-                    // Running indicator on the rail's outer edge — the dock is
-                    // vertical now, so the dot sits beside the icon, not under it.
                     Rectangle {
                         anchors.left: parent.left
                         anchors.leftMargin: -5

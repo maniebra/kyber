@@ -9,13 +9,6 @@ import "root:/"
 import "root:/components"
 import "root:/services"
 
-// Dashboard sheet: weather, host identity, clock + month, live meters, media.
-//
-// Layout follows caelestia's dashboard: each tab is a pane that states its own
-// implicit size, the sheet animates to the current pane's size, and the panes
-// travel horizontally behind a clipped viewport. One driver property
-// (`offsetScale`) runs the whole open/close slide — no timers, and `visible`
-// derives from it, so the animation can't finish before the window is mapped.
 PanelWindow {
     id: root
 
@@ -24,7 +17,6 @@ PanelWindow {
     readonly property bool shouldOpen:
         Globals.dashboard && Globals.focusedScreen === screenName
 
-    // 0 = fully down, 1 = parked above the screen
     property real offsetScale: shouldOpen ? 0 : 1
 
     readonly property bool open: offsetScale < 1
@@ -58,7 +50,6 @@ PanelWindow {
         precision: SystemClock.Minutes
     }
 
-    // click-away
     MouseArea {
         anchors.fill: parent
         focus: true
@@ -66,12 +57,6 @@ PanelWindow {
         Keys.onEscapePressed: Globals.dashboard = false
     }
 
-    // Concave wedges either side, so the sheet reads as carved out of the bar
-    // rather than glued under it.  ──\____/──
-    // Pinned to the bar's edge, not to the sheet: riding the sheet would park
-    // them off-screen for the whole slide and pop them in at the end.
-    // Tells the bar how much of its hairline to hold back. Tracks offsetScale,
-    // so the gap opens and closes with the slide instead of snapping.
     Binding {
         target: Globals
         property: "notchWidth"
@@ -80,10 +65,6 @@ PanelWindow {
         restoreMode: Binding.RestoreNone
     }
 
-    // The bar measures in screen coordinates, this window in its own — the
-    // compositor parks it past the rail's exclusive zone. Without that offset
-    // the hairline's right-hand segment starts early and clips the sheet's
-    // top-right corner.
     readonly property real screenInset: (screen?.width ?? width) - width
 
     Binding {
@@ -94,9 +75,6 @@ PanelWindow {
         restoreMode: Binding.RestoreNone
     }
 
-    // The 1px overlap parks the wedge on top of the sheet's own side stroke for
-    // the height of the flare, so the two lines read as one continuous edge
-    // instead of meeting in a T.
     FlareCorner {
         anchors.right: sheet.left
         anchors.rightMargin: -1
@@ -121,8 +99,6 @@ PanelWindow {
         anchors.top: parent.top
         anchors.topMargin: -(height + Theme.gap) * root.offsetScale
 
-        // Follows the viewport, which is the only thing that animates — a
-        // Behavior here too would ease an already-eased value and read as lag.
         width: Math.max(view.width, tabs.width) + 32
         height: tabs.height + view.height + 44
 
@@ -132,7 +108,6 @@ PanelWindow {
 
         MouseArea {
             anchors.fill: parent
-            // swallow clicks so click-away doesn't fire
         }
 
         Brackets {
@@ -143,7 +118,6 @@ PanelWindow {
             z: 200
         }
 
-        // ---- reusable bits ------------------------------------------------
         component Card: Rectangle {
             radius: 14
             color: Theme.well
@@ -156,7 +130,6 @@ PanelWindow {
             font.letterSpacing: 1.2
         }
 
-        // horizontal meter with caption
         component Meter: Column {
             id: meter
 
@@ -198,7 +171,6 @@ PanelWindow {
             }
         }
 
-        // vertical meter, for the compact column on the dashboard tab
         component Pillar: Item {
             id: pillar
 
@@ -236,7 +208,6 @@ PanelWindow {
             }
         }
 
-        // album art with a placeholder glyph when there's no art
         component Art: Rectangle {
             id: art
 
@@ -321,7 +292,6 @@ PanelWindow {
             }
         }
 
-        // ---- tabs ---------------------------------------------------------
         Item {
             id: tabs
 
@@ -329,9 +299,6 @@ PanelWindow {
             anchors.topMargin: 12
             anchors.horizontalCenter: parent.horizontalCenter
 
-            // Fixed cell, not a share of the sheet: stretching the strip with
-            // the sheet made the pill's own slide fight the resize, so it
-            // looked like it waited for the sheet before setting off.
             readonly property real cell: 150
 
             width: cell * model.length
@@ -402,8 +369,6 @@ PanelWindow {
                 }
             }
 
-            // The bar's own idiom: one accent-tinted pill that slides to the
-            // active tab. Sits behind the labels, not under them.
             Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 x: tabs.cell * root.tab + 6
@@ -429,9 +394,6 @@ PanelWindow {
             color: Theme.alpha(Theme.text, 0.08)
         }
 
-        // ---- panes --------------------------------------------------------
-        // Clipped viewport sized to the current pane; the row of panes slides
-        // behind it, so switching tabs travels sideways while the sheet morphs.
         ClippingRectangle {
             id: view
 
@@ -457,7 +419,6 @@ PanelWindow {
 
                 Behavior on x { Morph {} }
 
-                // ============== pane 0: dashboard =======================
                 Item {
                     id: dashPane
 
@@ -632,15 +593,13 @@ PanelWindow {
                         anchors.bottom: parent.bottom
                         width: dashPane.leftWidth - clockCard.width - pillarCard.width - 24
 
-                        // Monday-first month grid: 7 weekday heads + 42 day cells,
-                        // so the grid height never jumps between months.
                         readonly property date today: clock.date
 
                         readonly property var days: {
                             const y = today.getFullYear();
                             const m = today.getMonth();
                             const first = new Date(y, m, 1);
-                            const lead = (first.getDay() + 6) % 7; // Mon = 0
+                            const lead = (first.getDay() + 6) % 7;
                             const out = [];
                             for (let i = 0; i < 42; i++) {
                                 const d = new Date(y, m, i - lead + 1);
@@ -794,7 +753,6 @@ PanelWindow {
                     }
                 }
 
-                // ============== pane 1: media ===========================
                 Item {
                     implicitWidth: 640
                     implicitHeight: 280
@@ -819,7 +777,6 @@ PanelWindow {
                                     source: root.player?.trackArtUrl ?? ""
                                 }
 
-                                // the fader stands beside the art, same height
                                 NeonSlider {
                                     width: 56
                                     height: 150
@@ -870,7 +827,6 @@ PanelWindow {
                     }
                 }
 
-                // ============== pane 2: performance =====================
                 Item {
                     implicitWidth: 560
                     implicitHeight: 260
@@ -950,7 +906,6 @@ PanelWindow {
                     }
                 }
 
-                // ============== pane 3: workspaces ======================
                 Item {
                     implicitWidth: 520
                     implicitHeight: 220
@@ -998,9 +953,6 @@ PanelWindow {
                                             width: parent.width
                                             horizontalAlignment: Text.AlignHCenter
                                             elide: Text.ElideRight
-                                            // scratchpads come through as
-                                            // "special:name" — the prefix is
-                                            // all overflow, no information
                                             text: (ws.modelData.name ?? ws.modelData.id)
                                                 .toString().replace(/^special:/, "")
                                             color: Theme.text

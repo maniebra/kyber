@@ -6,8 +6,6 @@ import Quickshell.Services.Notifications
 Singleton {
     id: root
 
-    // Live popups (newest first) and the persistent history shown in the
-    // control center.
     property var popups: []
     property var history: []
 

@@ -7,9 +7,6 @@ import "root:/"
 import "root:/components"
 import "root:/services"
 
-// App menu: slides out of the left rail at mid-height, flares carving it into
-// the rail's edge. Type to filter desktop entries, arrows/tab to move, enter to
-// launch, escape to leave.
 PanelWindow {
     id: root
 
@@ -18,10 +15,6 @@ PanelWindow {
     readonly property bool shouldOpen:
         Globals.launcher && Globals.focusedScreen === screenName
 
-    // 0 = out, 1 = tucked back behind the rail. One driver runs the whole
-    // thing, and `visible` derives from it — binding `visible` to the toggle
-    // instead unmaps the window on the first frame of the close, so the slide
-    // never plays and the menu just blinks out.
     property real slide: shouldOpen ? 0 : 1
     Behavior on slide { Morph {} }
 
@@ -42,9 +35,6 @@ PanelWindow {
         bottom: true
     }
 
-    // No dim: this slides out of the rail like the bar's dropdowns hang off the
-    // bar, and dimming the whole desktop for a menu is a modal gesture the menu
-    // doesn't earn.
     color: "transparent"
     exclusiveZone: 0
     exclusionMode: ExclusionMode.Ignore
@@ -103,11 +93,9 @@ PanelWindow {
         onClicked: Globals.launcher = false
     }
 
-    // holds back the rail's hairline over the span the menu grows out of
     Binding {
         target: Globals
         property: "launcherNotchY"
-        // same frame as the rail: this window sits inside the exclusive zones
         value: Math.round(panel.y - 16 * (1 - root.slide))
         when: root.open
         restoreMode: Binding.RestoreNone
@@ -121,15 +109,9 @@ PanelWindow {
         restoreMode: Binding.RestoreNone
     }
 
-    // Everything lives right of the rail and is clipped to it, so the menu
-    // slides out from behind the rail instead of sitting on top of it — the
-    // rail is opaque, and a slab drawn over it would double the tint.
     Item {
         id: stage
 
-        // No left margin: the compositor already parks this window past the
-        // rail's exclusive zone, so x = 0 *is* the rail's right edge. Adding the
-        // rail width here shifted it a second time and left a rail-wide gap.
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.bottom: parent.bottom
@@ -137,12 +119,6 @@ PanelWindow {
         width: panel.width
         clip: true
 
-        // Wedges above and below, pinned to the rail's edge rather than to the
-        // panel: riding the panel would drag them out from behind the rail
-        // instead of letting them open in place. The bar's flares, quarter-turned.
-        // -1 on x as well as on the margin: the arc's tip tucks a pixel under
-        // the rail's edge line, so the two meet instead of stopping beside
-        // each other with a hairline of daylight between them.
         FlareCorner {
             x: -1
             anchors.bottom: panel.top
@@ -190,7 +166,6 @@ PanelWindow {
                 z: 200
             }
 
-            // ---- search field --------------------------------------------
             Item {
                 id: field
 
@@ -282,7 +257,6 @@ PanelWindow {
                 color: Theme.alpha(Theme.faint, 0.5)
             }
 
-            // ---- results --------------------------------------------------
             ListView {
                 id: list
 

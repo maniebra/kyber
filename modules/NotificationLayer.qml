@@ -8,8 +8,6 @@ import "root:/"
 import "root:/components"
 import "root:/services"
 
-// Toasts under the right end of the bar. Click dismisses, hover pauses the
-// expiry timer, critical ones never auto-expire.
 PanelWindow {
     id: root
 
@@ -56,12 +54,10 @@ PanelWindow {
                 width: parent.width
                 height: body.implicitHeight + 22
                 radius: Theme.radius
-                // critical toasts warm the whole slab instead of wearing a rim
                 color: critical
                     ? Qt.tint(Theme.panel, Theme.alpha(Theme.red, 0.22))
                     : Theme.panel
 
-                // slide in from the right
                 property real slide: 1
                 transform: Translate { x: toast.slide * 40 }
                 opacity: 1 - toast.slide

@@ -4,12 +4,11 @@ import Quickshell
 import QtQuick
 import Quickshell.Io
 
-// CPU + memory straight from /proc. No dependency, no daemon.
 Singleton {
     id: root
 
-    property real cpu: 0      // 0..1
-    property real memory: 0   // 0..1
+    property real cpu: 0
+    property real memory: 0
     property int memUsedMb: 0
     property int memTotalMb: 0
 

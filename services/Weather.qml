@@ -4,8 +4,6 @@ import Quickshell
 import Quickshell.Io
 import QtQuick
 
-// Weather from wttr.in — no API key, no daemon. Location auto-detected by IP
-// unless WEATHER_LOCATION is set (e.g. "Tehran").
 Singleton {
     id: root
 
@@ -16,7 +14,6 @@ Singleton {
 
     readonly property string place: Quickshell.env("WEATHER_LOCATION") ?? ""
 
-    // nerd-font glyph per wttr condition bucket
     readonly property string icon: {
         const c = condition.toLowerCase();
         if (c.includes("thunder")) return "";
@@ -46,14 +43,13 @@ Singleton {
                     root.location = a?.areaName?.[0]?.value ?? root.place;
                     root.ready = true;
                 } catch (e) {
-                    // leave the last good reading on screen
                 }
             }
         }
     }
 
     Timer {
-        interval: 900000 // 15 min; wttr.in asks callers not to hammer it
+        interval: 900000
         running: true
         repeat: true
         triggeredOnStart: true

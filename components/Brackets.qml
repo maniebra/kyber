@@ -2,10 +2,6 @@ import QtQuick
 
 import "root:/"
 
-// Corner brackets — the four L-ticks that frame a readout on a HUD. Thin, and
-// only ever accent: they're registration marks, so they must read as machine
-// furniture rather than as a border. Drop one over any panel; it fills its
-// parent and takes no input.
 Item {
     id: root
 
@@ -16,8 +12,6 @@ Item {
     property real elbow: 5
     property real strength: 0.7
 
-    // Which corners get a tick. Cyberpunk framing is rarely symmetric — two
-    // opposite corners usually reads better than all four.
     property bool topLeft: true
     property bool topRight: false
     property bool bottomLeft: false
@@ -43,9 +37,6 @@ Item {
             x: modelData.hx < 0 ? root.inset : root.width - root.arm - root.inset
             y: modelData.hy < 0 ? root.inset : root.height - root.arm - root.inset
 
-            // The L is one rounded-rect outline with three quarters of it
-            // clipped away — that way the elbow is a real arc, not two sticks
-            // butted together with rounded ends.
             clip: true
 
             Rectangle {

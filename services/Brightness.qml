@@ -4,17 +4,12 @@ import Quickshell
 import QtQuick
 import Quickshell.Io
 
-// brightnessctl wrapper. Degrades to "unavailable" when it isn't installed.
 Singleton {
     id: root
 
-    property real value: 1        // 0..1
+    property real value: 1
     property bool available: false
 
-    // Sysfs is the fast path: the keyboard's brightness keys run brightnessctl
-    // directly, and a 5s poll would show the OSD long after the key. Watching
-    // the file picks those up the moment they land. The poll below stays as the
-    // fallback for machines where this path doesn't exist.
     FileView {
         path: "/sys/class/backlight/intel_backlight/brightness"
         watchChanges: true

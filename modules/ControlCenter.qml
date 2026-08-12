@@ -18,17 +18,10 @@ PanelWindow {
     readonly property bool shouldOpen:
         Globals.controlCenter && Globals.focusedScreen === screenName
 
-    // 0 = tucked into the bar, 1 = fully out. One driver runs the whole thing
-    // and `visible` derives from it: binding `visible` straight to the toggle
-    // unmaps the window on the first frame of the close, which both skips the
-    // animation and freezes the bar's notch at its last width — leaving a stub
-    // of missing hairline behind.
     property real reveal: shouldOpen ? 1 : 0
     Behavior on reveal { Morph {} }
 
-    // 0 = main, 1 = networks, 2 = session. Sub-pages slide in from the right.
     property int page: 0
-    // which network row has its password field out
     property string pendingSsid: ""
 
     onPageChanged: {
@@ -48,9 +41,6 @@ PanelWindow {
 
     WlrLayershell.namespace: "kyber-control"
     WlrLayershell.layer: WlrLayer.Overlay
-    // OnDemand, not Exclusive: the panel only needs the keyboard while the
-    // wifi password field is focused, and grabbing it outright would swallow
-    // typing meant for whatever is underneath.
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
 
     anchors {
@@ -63,15 +53,11 @@ PanelWindow {
     color: "transparent"
     exclusiveZone: 0
 
-    // click-away
     MouseArea {
         anchors.fill: parent
         onClicked: Globals.controlCenter = false
     }
 
-    // holds back the bar's hairline over the span this dropdown occupies. It is
-    // flush with the screen's right edge, so the notch runs to the end of the
-    // bar and only the left side needs a flare.
     Binding {
         target: Globals
         property: "notchWidth"
@@ -80,7 +66,6 @@ PanelWindow {
         restoreMode: Binding.RestoreNone
     }
 
-    // same screen-vs-window offset the dashboard corrects for
     readonly property real screenInset: (screen?.width ?? width) - width
 
     Binding {
@@ -92,10 +77,6 @@ PanelWindow {
         restoreMode: Binding.RestoreNone
     }
 
-    // Notch: hangs off the right end of the bar, under the status island, square
-    // on top, rounded below, one concave flare on its open side.  ──\____|
-    // Pinned to the bar's edge rather than to the sheet: riding the sheet would
-    // drag the flare up behind the bar for the whole slide.
     FlareCorner {
         anchors.right: dropdown.left
         anchors.rightMargin: -1
@@ -112,13 +93,8 @@ PanelWindow {
         width: panel.width
         height: panel.height
 
-        // Slides down out of the bar and back up into it. This window starts at
-        // the bar's bottom edge, so a negative y parks the sheet behind the bar
-        // — no clip needed, and nothing pops.
         y: -height * Math.max(0, 1 - root.reveal)
 
-        // Trails the slide (the 1.4x, clamped) so it is most of the way out
-        // before it reads as solid, instead of fading in place.
         opacity: Math.max(0, 1 - (1 - root.reveal) * 1.4)
 
         GlassPanel {
@@ -131,11 +107,8 @@ PanelWindow {
 
             MouseArea {
                 anchors.fill: parent
-                // swallow clicks so click-away doesn't fire
             }
 
-            // Registration ticks in the two corners that aren't welded to the
-            // bar. Above the content, but takes no input.
             Brackets {
                 anchors.margins: 3
                 topLeft: false
@@ -144,9 +117,6 @@ PanelWindow {
                 z: 201
             }
 
-        // The panel is one window with three pages side by side: main, the
-        // network list, the power actions. Sub-pages slide in from the right
-        // instead of pushing the main page around, so nothing reflows.
         Item {
             id: viewport
 
@@ -168,14 +138,12 @@ PanelWindow {
 
                 Behavior on x { Morph {} }
 
-                // ============ page 0: main ==============================
                 Column {
                     id: mainPage
 
                     width: viewport.width
                     spacing: 12
 
-                    // ---- identity ------------------------------------------
             Item {
                 width: parent.width
                 height: 36
@@ -229,8 +197,6 @@ PanelWindow {
                             font.letterSpacing: Theme.trackingWide
                         }
 
-                        // Slug, not a label: the panel states what it is the
-                        // way a terminal banner does.
                         Text {
                             anchors.verticalCenter: parent.verticalCenter
                             text: "//SYS.CTRL"
@@ -251,7 +217,6 @@ PanelWindow {
 
                 }
 
-                // page buttons, pinned to the panel's right edge
                 Row {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -297,7 +262,6 @@ PanelWindow {
                 }
             }
 
-                    // ---- toggles -------------------------------------------
             Grid {
                 width: parent.width
                 columns: 2
@@ -357,10 +321,6 @@ PanelWindow {
                 }
             }
 
-                    // ---- media + faders -------------------------------------
-            // Media is the big square block and the faders are thin columns
-            // beside it: the sliders are aimed at, not read, so they need
-            // height, not width.
             Row {
                 id: mediaRow
 
@@ -513,7 +473,6 @@ PanelWindow {
                 }
             }
 
-                    // ---- notifications --------------------------------------
             Column {
                 width: parent.width
                 spacing: 6
@@ -574,8 +533,6 @@ PanelWindow {
                             ColorAnimation { duration: Theme.animFast }
                         }
 
-                        // same accent spine as the toasts, so history reads as
-                        // the same object the popup was
                         Rectangle {
                             anchors.left: parent.left
                             anchors.leftMargin: 1
@@ -660,7 +617,6 @@ PanelWindow {
             }
                 }
 
-                // ============ page 1: networks ==========================
                 Column {
                     id: wifiPage
 
@@ -674,9 +630,6 @@ PanelWindow {
                             : Network.scanning ? "Scanning…" : "Networks"
                     }
 
-                    // ---- wifi picker ----------------------------------------
-            // Right-click on the Wi-Fi tile opens this. Kept inside the panel
-            // rather than in a window of its own: it is a list, not a mode.
             Column {
                 width: parent.width
                 spacing: 6
@@ -825,8 +778,6 @@ PanelWindow {
                             cursorShape: Qt.PointingHandCursor
                             z: -1
 
-                            // Known or open networks connect straight away;
-                            // only an unknown secured one needs the field.
                             onClicked: {
                                 if (ap.modelData.active)
                                     return;
@@ -888,7 +839,6 @@ PanelWindow {
             }
                 }
 
-                // ============ page 2: power =============================
                 Column {
                     id: powerPage
 
@@ -900,7 +850,6 @@ PanelWindow {
                         title: "Session"
                     }
 
-                    // ---- power ------------------------------------------------
             Column {
                 id: powerList
 
@@ -971,8 +920,6 @@ PanelWindow {
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
 
-                            // Destructive actions need a second click; the armed
-                            // state expires on its own after 3s.
                             onClicked: {
                                 if (powerBtn.modelData.confirm && !powerBtn.armed) {
                                     powerList.armed = powerBtn.modelData.key;
@@ -1000,7 +947,6 @@ PanelWindow {
             }
         }
 
-        // Back chevron plus title, shared by both sub-pages.
         component PageHeader: Row {
             property string title
 

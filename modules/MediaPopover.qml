@@ -8,9 +8,6 @@ import "root:/"
 import "root:/components"
 import "root:/services"
 
-// Media peek: hovering the bar's clock chip drops a small flared sheet with the
-// current track and its transport. Same carve-out as the dashboard, a third the
-// size — a hover reveal shouldn't feel like opening something.
 PanelWindow {
     id: root
 
@@ -18,20 +15,14 @@ PanelWindow {
 
     readonly property var player: Player.current
 
-    // The dot's hover, plus the sheet's own, so the pointer can cross the gap
-    // between them. Nothing to show without a player.
     readonly property bool wantOpen:
         (Globals.mediaDotHovered || sheetHover.hovered)
         && Globals.focusedScreen === screenName
         && player !== null
-        // a click opened the real thing — the peek gets out of the way
         && !Globals.dashboard && !Globals.controlCenter
 
     property bool shouldOpen: false
 
-    // Opening waits a beat so the sheet doesn't flash when the pointer merely
-    // crosses the chip; closing waits too, so the trip from chip to sheet
-    // doesn't drop it.
     Timer {
         id: settle
 
@@ -40,8 +31,6 @@ PanelWindow {
         onTriggered: root.shouldOpen = root.wantOpen
     }
 
-    // 0 = fully down, 1 = parked above the screen. Same single driver as the
-    // dashboard: `visible` derives from it, so the slide can't outrun the map.
     property real offsetScale: shouldOpen ? 0 : 1
     Behavior on offsetScale { Morph {} }
 
@@ -64,8 +53,6 @@ PanelWindow {
     exclusiveZone: 0
     exclusionMode: ExclusionMode.Ignore
 
-    // Only the sheet takes the pointer — a full-window mask would eat every
-    // click on the desktop for as long as the peek is up.
     mask: Region {
         item: sheet
     }
@@ -78,8 +65,6 @@ PanelWindow {
         restoreMode: Binding.RestoreBindingOrValue
     }
 
-    // MPRIS position is pull-only; nothing pushes it. Poll while the sheet is
-    // up and the track is actually moving, and not a tick more.
     Timer {
         interval: 1000
         repeat: true
@@ -88,8 +73,6 @@ PanelWindow {
         onTriggered: root.player.positionChanged()
     }
 
-    // The bar holds its hairline back over the sheet's span, flares included,
-    // so the line meets the arcs instead of cutting across the sheet.
     Binding {
         target: Globals
         property: "notchWidth"
@@ -99,8 +82,6 @@ PanelWindow {
         restoreMode: Binding.RestoreNone
     }
 
-    // The bar measures in screen coordinates, this window in its own — the
-    // compositor parks it past the rail's exclusive zone.
     readonly property real screenInset: (screen?.width ?? width) - width
 
     Binding {
@@ -112,8 +93,6 @@ PanelWindow {
         restoreMode: Binding.RestoreNone
     }
 
-    // Concave wedges either side: the sheet reads as carved out of the bar
-    // rather than glued under it.  ──\____/──
     FlareCorner {
         anchors.right: sheet.left
         anchors.rightMargin: -1
@@ -141,23 +120,15 @@ PanelWindow {
         width: 380
         height: 116
 
-        // The corner swells while the sheet is still attached to the bar and
-        // relaxes as it lands — a drop pinching off a lip, not a box sliding.
         radius: Theme.radius + 4 + 12 * root.offsetScale
         squareTop: true
 
-        // Opacity trails the slide slightly (the 1.4x, clamped), so the sheet
-        // is already most of the way down before it reads as solid.
         opacity: Math.max(0, 1 - root.offsetScale * 1.4)
 
-        // A HoverHandler, not a MouseArea: the buttons' own MouseAreas sit on
-        // top and would take the hover away from a MouseArea underneath them,
-        // which closed the sheet the moment you reached for a control.
         HoverHandler {
             id: sheetHover
         }
 
-        // scroll the sheet to set volume — the pointer is already here
         WheelHandler {
             onWheel: event => Audio.setVolume(
                 Audio.volume + (event.angleDelta.y > 0 ? 0.02 : -0.02))
@@ -177,23 +148,18 @@ PanelWindow {
             z: 201
         }
 
-        // Contents drag behind the sheet by a few pixels and catch up at the
-        // end — surface tension, the same reason the flares overshoot.
         Row {
             anchors.fill: parent
             anchors.margins: 16
             anchors.topMargin: 16 - 10 * root.offsetScale
             spacing: 14
 
-            // ---- album art ------------------------------------------------
             Rectangle {
                 id: art
 
                 width: 84
                 height: 84
 
-                // Rounds hard while it is still folded away, so the art reads
-                // as a bead that squares itself off once it settles.
                 radius: 10 + 26 * root.offsetScale
                 scale: 1 - 0.08 * root.offsetScale
                 color: Theme.alpha(Theme.surfaceAlt, 0.9)
@@ -222,7 +188,6 @@ PanelWindow {
                 }
             }
 
-            // ---- track + transport ------------------------------------------
             Column {
                 width: parent.width - art.width - parent.spacing
                 anchors.verticalCenter: parent.verticalCenter
@@ -248,9 +213,6 @@ PanelWindow {
                     visible: text !== ""
                 }
 
-                // Progress, and a seek target. The hairline stays a hairline —
-                // the hit area is a taller transparent strip around it, so it
-                // can be hit without the bar itself getting chunky.
                 Item {
                     id: seek
 
@@ -287,8 +249,6 @@ PanelWindow {
                             radius: parent.radius
                             color: Theme.accent
 
-                            // Bloom under the fill, so the played part reads
-                            // wet rather than printed.
                             Rectangle {
                                 anchors.verticalCenter: parent.verticalCenter
                                 anchors.right: parent.right
@@ -299,15 +259,12 @@ PanelWindow {
                                 z: -1
                             }
 
-                            // No easing while dragging: the handle would lag the
-                            // pointer, which reads as the seek not taking.
                             Behavior on width {
                                 enabled: !bar.pressed
                                 NumberAnimation { duration: Theme.animMed }
                             }
                         }
 
-                        // Grabbable head, only once the strip is under the pointer
                         Rectangle {
                             anchors.verticalCenter: parent.verticalCenter
                             x: fill.width - width / 2
@@ -338,7 +295,6 @@ PanelWindow {
                     }
                 }
 
-                // ---- transport + player switcher ---------------------------
                 Item {
                     width: parent.width
                     height: 28
@@ -360,9 +316,6 @@ PanelWindow {
                                 width: 28
                                 height: 28
 
-                                // Full round, and it squashes under the press:
-                                // the control gives like a bead of liquid
-                                // instead of clicking like a key.
                                 radius: height / 2
                                 color: btn.pressed
                                     ? Theme.alpha(Theme.accent, 0.22)
@@ -408,9 +361,6 @@ PanelWindow {
                         }
                     }
 
-                // Only worth showing with something to switch *to*. Clicking a
-                // source pins it; clicking the pinned one hands control back to
-                // the scorer.
                     Row {
                         anchors.right: parent.right
                         anchors.verticalCenter: parent.verticalCenter

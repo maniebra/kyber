@@ -2,7 +2,6 @@ import QtQuick
 
 import "root:/"
 
-// Control-center tile: icon + label + state, in the macOS pill idiom.
 Rectangle {
     id: root
 
@@ -24,18 +23,12 @@ Rectangle {
             ? Theme.surfaceHover
             : Theme.alpha(Theme.surface, 0.85)
 
-    // A hairline as well as the lighter fill: the compositor's blur varies with
-    // what's behind the panel, and on a bright wallpaper the fill step alone
-    // stops reading.
     border.width: 1
     border.color: active ? Theme.alpha(accent, 0.35) : Theme.rimSoft
 
     antialiasing: true
     scale: mouse.pressed ? 0.975 : 1
 
-    // Status edge: a lit strip down the tile's leading side, the way a rack
-    // unit shows which channel is live. Collapses to nothing when off, so an
-    // idle tile stays a plain slab.
     Rectangle {
         anchors.left: parent.left
         anchors.leftMargin: 1
@@ -49,9 +42,6 @@ Rectangle {
         Behavior on height { Morph { duration: Theme.animMed } }
     }
 
-    // Diagonal hatch behind the live tile — the hazard fill 2077 puts under
-    // anything energised. Clipped to the tile, and faint enough to read as
-    // texture rather than as stripes.
     Item {
         anchors.fill: parent
         clip: true
@@ -90,8 +80,6 @@ Rectangle {
         Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
     }
 
-    // Corner tick, top right — a registration mark, not decoration: it only
-    // shows on the live tile.
     Rectangle {
         anchors.right: parent.right
         anchors.top: parent.top
@@ -121,8 +109,6 @@ Rectangle {
             width: 32
             height: 32
 
-            // Squarer than the tile that holds it — an instrument face set into
-            // a panel, rather than a pill inside a pill.
             radius: 5
 
             color: root.active ? root.accent : Theme.alpha(Theme.text, 0.08)
@@ -155,8 +141,6 @@ Rectangle {
             }
 
             Text {
-                // A machine readout: mono, small caps, wide tracking. The
-                // label above stays human — only the state line is telemetry.
                 text: root.sublabel.toUpperCase()
                 visible: text !== ""
                 color: root.active ? root.accent : Theme.faint

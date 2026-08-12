@@ -1,5 +1,3 @@
-//@ pragma UseQApplication
-
 import Quickshell
 import Quickshell.Io
 import QtQuick
@@ -29,7 +27,6 @@ ShellRoot {
         }
     }
 
-    // `qs -c kyber ipc call shell toggleLauncher` — wire these to hyprland binds
     IpcHandler {
         target: "shell"
 

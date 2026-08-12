@@ -16,7 +16,6 @@ Rectangle {
     radius: Theme.radiusSm
     antialiasing: true
 
-    // the active fill is the sliding pill behind the row, not this
     color: !active && mouse.containsMouse ? Theme.surfaceHover : "transparent"
 
     Behavior on width {
@@ -39,8 +38,6 @@ Rectangle {
         Behavior on color { ColorAnimation { duration: Theme.animFast } }
     }
 
-    // Occupied-but-not-focused workspaces carry a stub tick under the number:
-    // the row reads as a strip of channels with signal on some of them.
     Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom

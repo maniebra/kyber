@@ -17,7 +17,6 @@ Chip {
         precision: SystemClock.Minutes
     }
 
-    // left: dashboard sheet, right: control center
     onClicked: mouse => mouse.button === Qt.RightButton
         ? Globals.toggleControlCenter()
         : Globals.toggleDashboard()
@@ -35,7 +34,6 @@ Chip {
         font.pixelSize: Theme.fontSizeSm
     }
 
-    // static divider — a blinking dot is motion with nothing to say
     Text {
         anchors.verticalCenter: parent.verticalCenter
         text: "·"

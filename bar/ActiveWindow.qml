@@ -16,31 +16,20 @@ Item {
     opacity: visible ? 1 : 0
     Behavior on opacity { NumberAnimation { duration: Theme.animMed } }
 
-    // The margins have to be in the implicit width, and letter-spacing adds a
-    // trailing gap Qt counts in implicitWidth but the layout was cutting off —
-    // hence the slack. Without it the last glyph is clipped.
     implicitWidth: Math.min(row.implicitWidth + 10, maxWidth)
     implicitHeight: 22
     clip: true
 
-    // App id only. The window title is whatever the app feels like writing —
-    // usually a whole sentence — and it pushed everything else around as it
-    // changed.
     Text {
         id: row
 
         anchors.verticalCenter: parent.verticalCenter
 
-        // All caps, no descenders: Qt centres the line box, which reserves
-        // descender space this string never uses, so the glyphs ride high.
-        // SF Pro's box differs from the mono face the workspace numbers use,
-        // hence a nudge here rather than a shared rule.
         anchors.verticalCenterOffset: 1
 
         anchors.left: parent.left
         anchors.leftMargin: 4
 
-        // fills whatever the item settled on, minus its own margins
         width: parent.width - 8
         text: root.appId
         color: Theme.subtext

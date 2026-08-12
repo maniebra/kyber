@@ -9,7 +9,6 @@ Item {
 
     required property var monitor
 
-    // Always show 1..5, plus anything else live on this monitor.
     readonly property var entries: {
         const occupied = {};
         for (const t of Hyprland.toplevels.values) {
@@ -36,13 +35,8 @@ Item {
 
     implicitWidth: row.implicitWidth
 
-    // Matches the other bar cells' height rather than hugging the buttons: a
-    // Row lays its children out top-aligned, so a shorter cell here sat two
-    // pixels high against the window title beside it.
     implicitHeight: 22
 
-    // One pill that slides to whichever button is active, instead of each
-    // button lighting its own background — the travel is the transition.
     Rectangle {
         readonly property var target:
             root.activeIndex >= 0 ? rep.itemAt(root.activeIndex) : null

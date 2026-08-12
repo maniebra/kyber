@@ -4,18 +4,9 @@ import Quickshell.Widgets
 
 import "root:/"
 
-// An app/tray icon that never shows Qt's magenta checkerboard. A themed icon
-// can be missing for all sorts of ordinary reasons — a player with no desktop
-// entry, a tray app shipping a name no icon theme carries — and the placeholder
-// is worse than showing nothing, so a glyph stands in instead.
 Item {
     id: root
 
-    // Two ways in: a themed icon *name* (resolved here, with an existence
-    // check) or a ready-made url. The name path matters — Quickshell's icon
-    // loader happily returns its magenta checkerboard for a name no theme
-    // carries, and that image loads fine, so watching `status` catches
-    // nothing. Asking iconPath to verify first is the only reliable test.
     property string name: ""
     property string source: ""
     property real size: 20

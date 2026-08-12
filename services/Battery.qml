@@ -10,8 +10,6 @@ Singleton {
     readonly property bool available:
         device?.isLaptopBattery ?? false
 
-    // ponytail: UPower reports 0-1 in some builds, 0-100 in others. Normalise
-    // instead of guessing which one this machine has.
     readonly property real level: {
         const p = device?.percentage ?? 0;
         return p > 1 ? p / 100 : p;

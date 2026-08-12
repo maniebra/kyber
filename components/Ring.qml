@@ -2,22 +2,16 @@ import QtQuick
 
 import "root:/"
 
-// Radial gauge: a track, an arc for the value, a readout in the middle.
-// Canvas rather than QtQuick.Shapes — three of these repaint twice a second,
-// which is nowhere near enough work to justify a scene-graph shape.
 Item {
     id: root
 
-    property real value: 0        // 0..1
+    property real value: 0
     property string caption: ""
     property string readout: ""
     property color tint: Theme.accent
     property int thickness: 7
-    // most meters go red when they fill up; a battery goes red when it empties
     property bool warnHigh: true
 
-    // The arc animates by easing this shadow of `value` and repainting, since
-    // a Canvas has nothing to interpolate on its own.
     property real shown: 0
 
     implicitWidth: 96

@@ -2,8 +2,6 @@ import QtQuick
 
 import "root:/"
 
-// The bar's building block: a hoverable rounded cell holding whatever you
-// put in it.
 Rectangle {
     id: root
 
@@ -25,16 +23,12 @@ Rectangle {
     radius: Theme.radiusSm
     antialiasing: true
 
-    // Ghost by default: a bar of filled pills reads as a phone status bar. The
-    // cell only takes a surface once it's hovered or actually holding a state.
     color: active
         ? Theme.alpha(accent, 0.16)
         : mouse.containsMouse
             ? Theme.surfaceHover
             : "transparent"
 
-    // Presses register in the geometry, not just the fill — a chip that only
-    // changes colour on click feels like a web button, not a physical control.
     scale: mouse.pressed ? 0.96 : 1
 
     Behavior on color {
@@ -49,17 +43,9 @@ Rectangle {
         anchors.centerIn: parent
         spacing: 6
 
-        // Above the chip's own MouseArea, which is declared after it and would
-        // otherwise swallow every hover event before the content sees it — the
-        // clock's status dot needs its own hover. The MouseArea still gets the
-        // clicks: none of the content accepts them, and a HoverHandler is
-        // passive, so the chip's hover keeps working too.
         z: 1
     }
 
-    // Armed marker: a short accent rule under a chip that is holding state.
-    // Grows from the middle, so it reads as the cell latching rather than as a
-    // second border appearing.
     Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom

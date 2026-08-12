@@ -4,14 +4,12 @@ import Quickshell
 import QtQuick
 import Quickshell.Io
 
-// Thin nmcli poll. Enough for a status readout + a wifi toggle; anything
-// deeper belongs in nmtui.
 Singleton {
     id: root
 
     property string name: ""
-    property string type: ""       // wifi | ethernet | ""
-    property int strength: 0       // 0..100
+    property string type: ""
+    property int strength: 0
     property bool wifiEnabled: true
 
     readonly property bool connected: name !== ""
@@ -78,9 +76,6 @@ Singleton {
         }
     }
 
-    // ---- picker ---------------------------------------------------------
-    // Scanned APs, strongest first, one row per SSID:
-    // { ssid, signal, secured, known, active }
     property var networks: []
     property bool scanning: false
     property string error: ""
@@ -91,8 +86,6 @@ Singleton {
         list.running = true;
     }
 
-    // Known connection first — that reuses the stored secret instead of asking
-    // for it again. Only a network we have never seen needs a password.
     function connect(ssid, password) {
         error = "";
         scanning = true;
@@ -139,8 +132,6 @@ Singleton {
                     if (!line.startsWith("ap:"))
                         continue;
 
-                    // ACTIVE:SIGNAL:SECURITY:SSID — SSIDs may contain ':', so
-                    // only the first three fields are split off.
                     const parts = line.slice(3).split(":");
                     const ssid = parts.slice(3).join(":");
                     if (ssid === "" || seen[ssid])
