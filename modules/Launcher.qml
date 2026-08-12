@@ -106,7 +106,7 @@ PanelWindow {
     // holds back the rail's hairline over the span the menu grows out of
     Binding {
         target: Globals
-        property: "railNotchY"
+        property: "launcherNotchY"
         // same frame as the rail: this window sits inside the exclusive zones
         value: Math.round(panel.y - 16 * (1 - root.slide))
         when: root.open
@@ -115,7 +115,7 @@ PanelWindow {
 
     Binding {
         target: Globals
-        property: "railNotchHeight"
+        property: "launcherNotchHeight"
         value: Math.round((panel.height + 32) * (1 - root.slide))
         when: root.open
         restoreMode: Binding.RestoreNone
@@ -166,7 +166,7 @@ PanelWindow {
             id: panel
 
             anchors.verticalCenter: parent.verticalCenter
-            x: -width * root.slide
+            x: -width * Math.max(0, root.slide)
 
             width: Math.min(420, root.width - 80)
             height: 64 + Math.min(8, root.results.length) * 52 + (root.results.length ? 12 : 0)

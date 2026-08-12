@@ -23,9 +23,22 @@ Singleton {
     property real notchX: 0
     property real notchWidth: 0
 
-    // Same idea for the left rail, which the app menu slides out of.
-    property real railNotchY: 0
-    property real railNotchHeight: 0
+    // Same idea for the left rail. Two sheets slide out of it — the app menu
+    // and the layout OSD — and they each own their own pair rather than sharing
+    // one: with a single pair, whichever sheet closed last wrote its 0 over the
+    // value the still-open sheet had set, and the rail's hairline snapped back
+    // across the open sheet.
+    property real launcherNotchY: 0
+    property real launcherNotchHeight: 0
+    property real osdNotchY: 0
+    property real osdNotchHeight: 0
+
+    // The menu wins when both are out: it is the bigger sheet, and the OSD
+    // rides inside its span anyway.
+    readonly property real railNotchHeight:
+        launcherNotchHeight > 0 ? launcherNotchHeight : osdNotchHeight
+    readonly property real railNotchY:
+        launcherNotchHeight > 0 ? launcherNotchY : osdNotchY
 
     // Hover on the clock pill's status dot, which the media peek hangs off. The
     // peek ORs its own hover in, so the pointer can travel from the dot onto

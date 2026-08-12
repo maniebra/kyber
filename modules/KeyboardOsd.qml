@@ -68,7 +68,7 @@ PanelWindow {
     // deal as the app menu, and only while the menu isn't itself notching it
     Binding {
         target: Globals
-        property: "railNotchY"
+        property: "osdNotchY"
         value: Math.round(panel.y - 16 * (1 - root.slide))
         when: root.open && !Globals.launcher
         restoreMode: Binding.RestoreNone
@@ -76,7 +76,7 @@ PanelWindow {
 
     Binding {
         target: Globals
-        property: "railNotchHeight"
+        property: "osdNotchHeight"
         value: Math.round((panel.height + 32) * (1 - root.slide))
         when: root.open && !Globals.launcher
         restoreMode: Binding.RestoreNone
@@ -119,7 +119,7 @@ PanelWindow {
             // Beside the rail's layout indicator: 8 top margin, the 26px menu
             // button, 8 gap, then the label. The slab centres on that label.
             y: 8 + 26 + 8 - (height - 14) / 2
-            x: -width * root.slide
+            x: -width * Math.max(0, root.slide)
 
             width: label.implicitWidth + 32
             height: 44
