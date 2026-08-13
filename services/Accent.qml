@@ -32,6 +32,16 @@ Singleton {
 
     readonly property string art: Player.current?.trackArtUrl ?? ""
 
+    // Elisa hands the cover over inline as a base64 data: URL. It is far past the
+    // 128K limit on a single argv entry, so it goes to the probe over stdin.
+    readonly property bool inlineArt: art.startsWith("data:")
+
+    // Local covers arrive as percent-encoded file:// URLs; ffmpeg wants a plain
+    // path. Remote http(s) URLs it can open as-is.
+    readonly property string artPath: art.startsWith("file://")
+        ? decodeURIComponent(art.slice(7))
+        : art
+
     onArtChanged: sample.restart()
     onModeChanged: {
         if (mode === "off") {
@@ -52,16 +62,27 @@ Singleton {
                 return;
             }
             probe.running = false;
+            probe.stdinEnabled = root.inlineArt;
             probe.running = true;
+            if (root.inlineArt) {
+                probe.write(root.art.slice(root.art.indexOf(",") + 1));
+                probe.stdinEnabled = false;
+            }
         }
     }
 
     Process {
         id: probe
 
-        command: ["sh", "-c",
-            `ffmpeg -v error -i "${root.art}" -vf scale=8:8 -frames:v 1 ` +
-            `-f rawvideo -pix_fmt rgb24 - 2>/dev/null | od -An -tu1 -v`]
+        readonly property string pipeline:
+            `ffmpeg -v error -i "$1" -vf scale=8:8 -frames:v 1 ` +
+            `-f rawvideo -pix_fmt rgb24 - 2>/dev/null | od -An -tu1 -v`
+
+        command: root.inlineArt
+            ? ["sh", "-c", `base64 -d | ${pipeline}`, "sh", "-"]
+            : ["sh", "-c", pipeline, "sh", root.artPath]
+
+        stdinEnabled: false
 
         stdout: StdioCollector {
             onStreamFinished: {
