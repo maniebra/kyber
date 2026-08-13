@@ -902,6 +902,96 @@ PanelWindow {
                             width: parent.width - 44
                             spacing: 16
 
+                            Item {
+                                width: parent.width
+                                height: 22
+
+                                Row {
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 8
+
+                                    Text {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        text: "ACCENT FROM COVER"
+                                        color: Theme.faint
+                                        font.family: Theme.fontMono
+                                        font.pixelSize: 9
+                                        font.letterSpacing: Theme.trackingWide
+                                    }
+
+                                    Rectangle {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        width: 12
+                                        height: 12
+                                        radius: 3
+                                        color: Accent.valid ? Accent.color : Theme.faint
+                                        border.width: 1
+                                        border.color: Theme.rimSoft
+
+                                        Behavior on color { CMorph {} }
+                                    }
+                                }
+
+                                Row {
+                                    anchors.right: parent.right
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 4
+
+                                    Repeater {
+                                        model: [
+                                            { key: "off", label: "OFF" },
+                                            { key: "peek", label: "PEEK" },
+                                            { key: "system", label: "SYSTEM" }
+                                        ]
+
+                                        Rectangle {
+                                            id: accentSeg
+
+                                            required property var modelData
+
+                                            readonly property bool on:
+                                                Accent.mode === modelData.key
+
+                                            width: 58
+                                            height: 22
+                                            radius: Theme.radiusSm
+
+                                            color: accentSeg.on
+                                                ? Theme.alpha(Theme.accent, 0.2)
+                                                : segMouse.containsMouse
+                                                    ? Theme.surfaceHover
+                                                    : Theme.alpha(Theme.surface, 0.7)
+
+                                            border.width: 1
+                                            border.color: accentSeg.on
+                                                ? Theme.alpha(Theme.accent, 0.4)
+                                                : Theme.rimSoft
+
+                                            Behavior on color { CMorph { duration: Theme.animFast } }
+
+                                            Text {
+                                                anchors.centerIn: parent
+                                                text: accentSeg.modelData.label
+                                                color: accentSeg.on ? Theme.accent : Theme.subtext
+                                                font.family: Theme.fontMono
+                                                font.pixelSize: 9
+                                                font.letterSpacing: Theme.trackingWide
+                                            }
+
+                                            MouseArea {
+                                                id: segMouse
+
+                                                anchors.fill: parent
+                                                hoverEnabled: true
+                                                cursorShape: Qt.PointingHandCursor
+                                                onClicked: Accent.mode = accentSeg.modelData.key
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
                             Row {
                                 spacing: 20
 

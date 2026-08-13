@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import "root:/services"
 pragma Singleton
 
 Singleton {
@@ -20,7 +21,8 @@ Singleton {
     readonly property color lime: "#a8b0a8"
     readonly property color amber: "#b8ac96"
     readonly property color red: "#c09090"
-    readonly property color accent: cyan
+    readonly property color accent:
+        Accent.mode === "system" && Accent.valid ? Accent.color : cyan
     readonly property color accentText: "#151515"
     readonly property color rim: Qt.rgba(1, 1, 1, 0.14)
     readonly property color rimSoft: Qt.rgba(1, 1, 1, 0.08)

@@ -16,6 +16,9 @@ PanelWindow {
 
     readonly property var player: Player.current
 
+    readonly property color accent:
+        Accent.mode === "off" ? Theme.accent : Accent.color
+
     readonly property bool wantOpen:
         (Globals.mediaDotHovered || sheetHover.hovered)
         && Globals.focusedScreen === screenName
@@ -211,7 +214,7 @@ PanelWindow {
                     strokeWidth: 0
                     strokeColor: "transparent"
 
-                    fillColor: Theme.alpha(Theme.accent, 0.16)
+                    fillColor: Theme.alpha(root.accent, 0.16)
 
                     PathPolyline {
                         path: viz.filled
@@ -220,7 +223,7 @@ PanelWindow {
 
                 ShapePath {
                     strokeWidth: 1.5
-                    strokeColor: Qt.lighter(Theme.accent, 1.35)
+                    strokeColor: Qt.lighter(root.accent, 1.35)
                     fillColor: "transparent"
                     capStyle: ShapePath.RoundCap
                     joinStyle: ShapePath.RoundJoin
@@ -239,6 +242,7 @@ PanelWindow {
         }
 
         Brackets {
+            color: root.accent
             anchors.margins: 3
             topLeft: false
             bottomLeft: true
@@ -348,7 +352,7 @@ PanelWindow {
                                 (root.player?.position ?? 0) / (root.player?.length ?? 1)))
                             height: parent.height
                             radius: parent.radius
-                            color: Theme.accent
+                            color: root.accent
 
                             Rectangle {
                                 anchors.verticalCenter: parent.verticalCenter
@@ -356,7 +360,7 @@ PanelWindow {
                                 width: Math.min(parent.width, 56)
                                 height: parent.height + 6
                                 radius: height / 2
-                                color: Theme.alpha(Theme.accent, 0.22)
+                                color: Theme.alpha(root.accent, 0.22)
                                 z: -1
                             }
 
@@ -372,7 +376,7 @@ PanelWindow {
                             width: 9
                             height: 9
                             radius: 4.5
-                            color: Theme.accent
+                            color: root.accent
                             opacity: bar.containsMouse && seek.seekable ? 1 : 0
 
                             Behavior on opacity { NumberAnimation { duration: Theme.animFast } }
@@ -419,7 +423,7 @@ PanelWindow {
 
                                 radius: height / 2
                                 color: btn.pressed
-                                    ? Theme.alpha(Theme.accent, 0.22)
+                                    ? Theme.alpha(root.accent, 0.22)
                                     : btn.containsMouse
                                         ? Theme.surfaceHover
                                         : "transparent"
@@ -484,7 +488,7 @@ PanelWindow {
                                 radius: Theme.radiusSm
 
                                 color: selected
-                                    ? Theme.alpha(Theme.accent, 0.16)
+                                    ? Theme.alpha(root.accent, 0.16)
                                     : pick.containsMouse
                                         ? Theme.surfaceHover
                                         : "transparent"
@@ -496,7 +500,7 @@ PanelWindow {
                                     size: 14
                                     glyph: ""
                                     glyphColor: srcItem.selected
-                                        ? Theme.accent
+                                        ? root.accent
                                         : Theme.subtext
                                     opacity: srcItem.selected ? 1 : 0.55
                                     name: DesktopEntries.heuristicLookup(
