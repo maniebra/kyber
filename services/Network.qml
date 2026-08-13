@@ -12,6 +12,10 @@ Singleton {
     property int strength: 0
     property bool wifiEnabled: true
 
+    property var vpns: []
+    readonly property var activeVpn: vpns.find(v => v.active) ?? null
+    readonly property bool vpnUp: activeVpn !== null
+
     readonly property bool connected: name !== ""
 
     readonly property string icon: {
@@ -36,6 +40,14 @@ Singleton {
         repeat: true
         triggeredOnStart: true
         onTriggered: probe.running = true
+    }
+
+    Timer {
+        interval: 30000
+        running: true
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: list.running = true
     }
 
     Process {
@@ -114,6 +126,7 @@ Singleton {
         command: ["sh", "-c", `
             command -v nmcli >/dev/null 2>&1 || exit 0
             nmcli -t -f NAME con show 2>/dev/null | sed 's/^/known:/'
+            nmcli -t -f NAME,TYPE,STATE con show 2>/dev/null | sed 's/^/con:/'
             nmcli --escape no -t -f ACTIVE,SIGNAL,SECURITY,SSID dev wifi list 2>/dev/null |
                 sed 's/^/ap:/'
         `]
@@ -123,10 +136,24 @@ Singleton {
                 const known = {};
                 const seen = {};
                 const aps = [];
+                const vpns = [];
 
                 for (const line of text.split("\n")) {
                     if (line.startsWith("known:")) {
                         known[line.slice(6)] = true;
+                        continue;
+                    }
+                    if (line.startsWith("con:")) {
+                        const f = line.slice(4).split(":");
+                        const state = f.pop();
+                        const type = f.pop();
+                        const name = f.join(":");
+                        if (name !== "" && (type === "vpn" || type === "wireguard" || type === "tun"))
+                            vpns.push({
+                                name: name,
+                                type: type,
+                                active: state === "activated"
+                            });
                         continue;
                     }
                     if (!line.startsWith("ap:"))
@@ -145,6 +172,9 @@ Singleton {
                         active: parts[0] === "yes"
                     });
                 }
+
+                root.vpns = vpns.sort((a, b) =>
+                    (b.active ? 1 : 0) - (a.active ? 1 : 0) || a.name.localeCompare(b.name));
 
                 root.networks = aps
                     .map(ap => Object.assign(ap, { known: known[ap.ssid] === true }))
@@ -171,6 +201,15 @@ Singleton {
             probe.running = true;
             list.running = true;
         }
+    }
+
+    function vpnToggle(name) {
+        const entry = root.vpns.find(v => v.name === name);
+        if (!entry)
+            return;
+        connector.command = ["nmcli", "con", entry.active ? "down" : "up", "id", name];
+        connector.running = true;
+        root.scanning = true;
     }
 
     function toggleWifi() {

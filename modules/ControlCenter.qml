@@ -28,6 +28,13 @@ PanelWindow {
         pendingSsid = "";
         if (page === 1)
             Network.scan();
+        const bt = Bluetooth.defaultAdapter;
+        if (!bt || !bt.enabled)
+            return;
+        if (page === 3 && !bt.discovering)
+            bt.discovering = true;
+        else if (page !== 3 && bt.discovering)
+            bt.discovering = false;
     }
 
     onShouldOpenChanged: {
@@ -126,7 +133,10 @@ PanelWindow {
             anchors.margins: 14
 
             readonly property Item current:
-                root.page === 1 ? wifiPage : root.page === 2 ? powerPage : mainPage
+                root.page === 1 ? wifiPage
+                : root.page === 2 ? powerPage
+                : root.page === 3 ? btPage
+                : mainPage
 
             height: current.implicitHeight
             clip: true
@@ -225,6 +235,7 @@ PanelWindow {
                     Repeater {
                     model: [
                         { glyph: "", page: 1, tint: Theme.cyan },
+                        { glyph: "", page: 3, tint: Theme.accent },
                         { glyph: "", page: 2, tint: Theme.red }
                     ]
 
@@ -296,6 +307,7 @@ PanelWindow {
                         if (Bluetooth.defaultAdapter)
                             Bluetooth.defaultAdapter.enabled = !Bluetooth.defaultAdapter.enabled;
                     }
+                    onSecondaryClicked: root.page = 3
                 }
 
                 ToggleTile {
@@ -307,6 +319,26 @@ PanelWindow {
                     accent: Theme.accent
 
                     onClicked: Globals.dnd = !Globals.dnd
+                }
+
+                ToggleTile {
+                    width: parent.cell
+                    icon: Network.vpnUp ? "\ue1ff" : "\ue158"
+                    label: "VPN"
+                    sublabel: Network.vpnUp
+                        ? Network.activeVpn.name
+                        : Network.vpns.length === 0 ? "None set up" : "Off"
+                    active: Network.vpnUp
+                    accent: Theme.lime
+
+                    onClicked: {
+                        if (Network.vpns.length === 0)
+                            Network.openEditor();
+                        else
+                            Network.vpnToggle(
+                                (Network.activeVpn ?? Network.vpns[0]).name);
+                    }
+                    onSecondaryClicked: root.page = 1
                 }
 
                 ToggleTile {
@@ -689,6 +721,96 @@ PanelWindow {
                     wrapMode: Text.WordWrap
                 }
 
+                    Column {
+                        width: parent.width
+                        spacing: 6
+                        visible: Network.vpns.length > 0
+
+                        Text {
+                            text: "VPN"
+                            color: Theme.faint
+                            font.family: Theme.fontMono
+                            font.pixelSize: 9
+                            font.letterSpacing: Theme.trackingWide
+                        }
+
+                        Repeater {
+                            model: Network.vpns
+
+                            Rectangle {
+                                id: vpnRow
+
+                                required property var modelData
+
+                                width: parent.width
+                                height: 44
+                                radius: Theme.radiusSm + 2
+
+                                color: vpnRow.modelData.active
+                                    ? Theme.alpha(Theme.lime, 0.14)
+                                    : vpnHover.containsMouse
+                                        ? Theme.surfaceHover
+                                        : Theme.alpha(Theme.surface, 0.7)
+
+                                border.width: 1
+                                border.color: vpnRow.modelData.active
+                                    ? Theme.alpha(Theme.lime, 0.35)
+                                    : Theme.rimSoft
+
+                                Behavior on color { ColorAnimation { duration: Theme.animFast } }
+
+                                Text {
+                                    id: vpnIcon
+
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    text: vpnRow.modelData.active ? "\ue1ff" : "\ue158"
+                                    color: vpnRow.modelData.active ? Theme.lime : Theme.subtext
+                                    font.family: Theme.fontIcon
+                                    font.pixelSize: 14
+                                }
+
+                                Column {
+                                    anchors.left: vpnIcon.right
+                                    anchors.leftMargin: 12
+                                    anchors.right: parent.right
+                                    anchors.rightMargin: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 1
+
+                                    Text {
+                                        width: parent.width
+                                        text: vpnRow.modelData.name
+                                        color: Theme.text
+                                        font.family: Theme.font
+                                        font.pixelSize: 12
+                                        elide: Text.ElideRight
+                                    }
+
+                                    Text {
+                                        width: parent.width
+                                        text: `${vpnRow.modelData.type.toUpperCase()} \u00b7 ${vpnRow.modelData.active ? "UP" : "DOWN"}`
+                                        color: vpnRow.modelData.active ? Theme.lime : Theme.faint
+                                        font.family: Theme.fontMono
+                                        font.pixelSize: 9
+                                        font.letterSpacing: Theme.trackingWide
+                                    }
+                                }
+
+                                MouseArea {
+                                    id: vpnHover
+
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: Network.vpnToggle(vpnRow.modelData.name)
+                                }
+                            }
+                        }
+                    }
+
                 Repeater {
                     model: Network.networks
 
@@ -943,6 +1065,263 @@ PanelWindow {
                     }
                 }
             }
+                Column {
+                    id: btPage
+
+                    width: viewport.width
+                    spacing: 12
+
+                    PageHeader {
+                        width: parent.width
+                        title: !Bluetooth.defaultAdapter
+                            ? "No adapter"
+                            : !Bluetooth.defaultAdapter.enabled
+                                ? "Bluetooth is off"
+                                : Bluetooth.defaultAdapter.discovering
+                                    ? "Scanning\u2026"
+                                    : "Devices"
+                    }
+
+                    Column {
+                        width: parent.width
+                        spacing: 6
+
+                        Row {
+                            width: parent.width
+
+                            Item {
+                                width: parent.width - 90
+                                height: 1
+                            }
+
+                            Text {
+                                text: Bluetooth.defaultAdapter?.discovering ? "stop" : "scan"
+                                color: btScan.containsMouse ? Theme.accent : Theme.faint
+                                font.family: Theme.fontMono
+                                font.pixelSize: 9
+
+                                MouseArea {
+                                    id: btScan
+
+                                    anchors.fill: parent
+                                    anchors.margins: -6
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        const a = Bluetooth.defaultAdapter;
+                                        if (a?.enabled)
+                                            a.discovering = !a.discovering;
+                                    }
+                                }
+                            }
+
+                            Item { width: 10; height: 1 }
+
+                            Text {
+                                text: Bluetooth.defaultAdapter?.enabled ? "off" : "on"
+                                color: btPower.containsMouse ? Theme.accent : Theme.faint
+                                font.family: Theme.fontMono
+                                font.pixelSize: 9
+
+                                MouseArea {
+                                    id: btPower
+
+                                    anchors.fill: parent
+                                    anchors.margins: -6
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        const a = Bluetooth.defaultAdapter;
+                                        if (a)
+                                            a.enabled = !a.enabled;
+                                    }
+                                }
+                            }
+                        }
+
+                        Text {
+                            width: parent.width
+                            visible: (Bluetooth.devices?.values?.length ?? 0) === 0
+                            text: Bluetooth.defaultAdapter?.enabled
+                                ? "NO DEVICES IN RANGE"
+                                : "ADAPTER OFF"
+                            color: Theme.faint
+                            font.family: Theme.fontMono
+                            font.pixelSize: 9
+                            font.letterSpacing: Theme.trackingWide
+                        }
+
+                        Repeater {
+                            model: Bluetooth.devices
+
+                            Rectangle {
+                                id: btRow
+
+                                required property BluetoothDevice modelData
+
+                                readonly property bool busy:
+                                    modelData.state === BluetoothDeviceState.Connecting
+                                    || modelData.state === BluetoothDeviceState.Disconnecting
+
+                                width: parent.width
+                                height: 52
+                                radius: Theme.radiusSm + 2
+
+                                color: btRow.modelData.connected
+                                    ? Theme.alpha(Theme.accent, 0.14)
+                                    : btHover.containsMouse
+                                        ? Theme.surfaceHover
+                                        : Theme.alpha(Theme.surface, 0.7)
+
+                                border.width: 1
+                                border.color: btRow.modelData.connected
+                                    ? Theme.alpha(Theme.accent, 0.35)
+                                    : Theme.rimSoft
+
+                                Behavior on color { ColorAnimation { duration: Theme.animFast } }
+
+                                Text {
+                                    id: btIcon
+
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+
+                                    text: {
+                                        const i = btRow.modelData.icon ?? "";
+                                        if (i.includes("headset") || i.includes("headphone"))
+                                            return "\ue0f1";
+                                        if (i.includes("mouse"))
+                                            return "\ue28e";
+                                        if (i.includes("gaming"))
+                                            return "\ue0df";
+                                        return "\ue05c";
+                                    }
+                                    color: btRow.modelData.connected ? Theme.accent : Theme.subtext
+                                    font.family: Theme.fontIcon
+                                    font.pixelSize: 15
+                                }
+
+                                Column {
+                                    anchors.left: btIcon.right
+                                    anchors.leftMargin: 12
+                                    anchors.right: btActions.left
+                                    anchors.rightMargin: 10
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 2
+
+                                    Text {
+                                        width: parent.width
+                                        text: btRow.modelData.name
+                                        color: Theme.text
+                                        font.family: Theme.font
+                                        font.pixelSize: 12
+                                        elide: Text.ElideRight
+                                    }
+
+                                    Text {
+                                        width: parent.width
+                                        text: {
+                                            const bits = [];
+                                            if (btRow.busy)
+                                                bits.push("WORKING");
+                                            else
+                                                bits.push(btRow.modelData.connected
+                                                    ? "CONNECTED" : "AVAILABLE");
+                                            if (btRow.modelData.paired)
+                                                bits.push("PAIRED");
+                                            if (btRow.modelData.batteryAvailable)
+                                                bits.push(`${Math.round(btRow.modelData.battery * 100)}%`);
+                                            return bits.join(" \u00b7 ");
+                                        }
+                                        color: btRow.modelData.connected ? Theme.accent : Theme.faint
+                                        font.family: Theme.fontMono
+                                        font.pixelSize: 9
+                                        font.letterSpacing: Theme.trackingWide
+                                        elide: Text.ElideRight
+                                    }
+                                }
+
+                                Row {
+                                    id: btActions
+
+                                    anchors.right: parent.right
+                                    anchors.rightMargin: 10
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 2
+
+                                    Repeater {
+                                        model: btRow.modelData.paired
+                                            ? ["toggle", "forget"]
+                                            : ["toggle"]
+
+                                        Rectangle {
+                                            id: btAct
+
+                                            required property string modelData
+
+                                            width: 26
+                                            height: 26
+                                            radius: Theme.radiusSm
+                                            color: actMouse.containsMouse
+                                                ? Theme.surfaceHover
+                                                : "transparent"
+
+                                            Text {
+                                                anchors.centerIn: parent
+                                                text: btAct.modelData === "forget"
+                                                    ? "\ue18e"
+                                                    : btRow.modelData.connected ? "\ue19c" : "\ue102"
+                                                color: btAct.modelData === "forget"
+                                                    ? Theme.red
+                                                    : Theme.subtext
+                                                font.family: Theme.fontIcon
+                                                font.pixelSize: 13
+                                            }
+
+                                            MouseArea {
+                                                id: actMouse
+
+                                                anchors.fill: parent
+                                                hoverEnabled: true
+                                                cursorShape: Qt.PointingHandCursor
+
+                                                onClicked: {
+                                                    const d = btRow.modelData;
+                                                    if (btAct.modelData === "forget") {
+                                                        d.forget();
+                                                        return;
+                                                    }
+                                                    if (d.connected)
+                                                        d.disconnect();
+                                                    else
+                                                        d.connect();
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                MouseArea {
+                                    id: btHover
+
+                                    anchors.fill: parent
+                                    anchors.rightMargin: 70
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+
+                                    onClicked: {
+                                        const d = btRow.modelData;
+                                        if (d.connected)
+                                            d.disconnect();
+                                        else
+                                            d.connect();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 }
             }
         }
