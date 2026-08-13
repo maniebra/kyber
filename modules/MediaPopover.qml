@@ -3,6 +3,7 @@ import Quickshell.Wayland
 import Quickshell.Widgets
 import Quickshell.Services.Mpris
 import QtQuick
+import QtQuick.Shapes
 
 import "root:/"
 import "root:/components"
@@ -134,6 +135,103 @@ PanelWindow {
                 Audio.volume + (event.angleDelta.y > 0 ? 0.02 : -0.02))
         }
 
+        ClippingRectangle {
+            id: viz
+
+            anchors.fill: parent
+            anchors.margins: 1
+            color: "transparent"
+            radius: sheet.radius - 1
+            z: 1
+            opacity: Spectrum.active ? 1 : 0
+
+            Behavior on opacity { NumberAnimation { duration: Theme.animMed } }
+
+            readonly property int resolution: 90
+            readonly property real floorY: height - 1
+
+            property var smoothed: new Array(Spectrum.bandCount).fill(0)
+
+            Timer {
+                interval: 16
+                running: viz.opacity > 0
+                repeat: true
+
+                onTriggered: {
+                    const target = Spectrum.bars;
+                    const cur = viz.smoothed;
+                    const out = [];
+
+                    for (let i = 0; i < cur.length; i++) {
+                        const t = target[i] ?? 0;
+                        const rate = t > cur[i] ? 0.45 : 0.16;
+                        out.push(cur[i] + (t - cur[i]) * rate);
+                    }
+
+                    viz.smoothed = out;
+                }
+            }
+
+            readonly property var curve: {
+                const src = viz.smoothed;
+                const n = src.length;
+                const pts = [];
+
+                for (let i = 0; i < viz.resolution; i++) {
+                    const x = i / (viz.resolution - 1) * (n - 1);
+                    const i0 = Math.floor(x);
+                    const i1 = Math.min(n - 1, i0 + 1);
+                    const f = x - i0;
+                    const smooth = (1 - Math.cos(f * Math.PI)) / 2;
+                    const v = src[i0] * (1 - smooth) + src[i1] * smooth;
+
+                    pts.push(Qt.point(
+                        i / (viz.resolution - 1) * viz.width,
+                        viz.floorY - v * viz.height * 0.66
+                    ));
+                }
+
+                return pts;
+            }
+
+            readonly property var filled: {
+                const pts = [Qt.point(0, viz.floorY)];
+                for (const p of viz.curve)
+                    pts.push(p);
+                pts.push(Qt.point(viz.width, viz.floorY));
+                return pts;
+            }
+
+            Shape {
+                anchors.fill: parent
+                preferredRendererType: Shape.CurveRenderer
+                asynchronous: false
+
+                ShapePath {
+                    strokeWidth: 0
+                    strokeColor: "transparent"
+
+                    fillColor: Theme.alpha(Theme.accent, 0.16)
+
+                    PathPolyline {
+                        path: viz.filled
+                    }
+                }
+
+                ShapePath {
+                    strokeWidth: 1.5
+                    strokeColor: Qt.lighter(Theme.accent, 1.35)
+                    fillColor: "transparent"
+                    capStyle: ShapePath.RoundCap
+                    joinStyle: ShapePath.RoundJoin
+
+                    PathPolyline {
+                        path: viz.curve
+                    }
+                }
+            }
+        }
+
         Scanlines {
             radius: sheet.radius
             squareTop: true
@@ -153,6 +251,7 @@ PanelWindow {
             anchors.margins: 16
             anchors.topMargin: 16 - 10 * root.offsetScale
             spacing: 14
+            z: 2
 
             Rectangle {
                 id: art
@@ -161,7 +260,9 @@ PanelWindow {
                 height: 84
 
                 radius: 10 + 26 * root.offsetScale
-                scale: 1 - 0.08 * root.offsetScale
+                scale: (1 - 0.08 * root.offsetScale) * (1 + Spectrum.bass * 0.06)
+
+                Behavior on scale { NumberAnimation { duration: 90 } }
                 color: Theme.alpha(Theme.surfaceAlt, 0.9)
 
                 ClippingRectangle {
