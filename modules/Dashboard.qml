@@ -308,7 +308,8 @@ PanelWindow {
                 { glyph: "", name: "Dashboard" },
                 { glyph: "", name: "Media" },
                 { glyph: "", name: "Performance" },
-                { glyph: "", name: "Workspaces" }
+                { glyph: "", name: "Workspaces" },
+                { glyph: "", name: "Agenda" }
             ]
 
             Repeater {
@@ -594,67 +595,200 @@ PanelWindow {
                         width: dashPane.leftWidth - clockCard.width - pillarCard.width - 24
 
                         readonly property date today: clock.date
+                        readonly property bool shamsi: Calendar.shamsiPrimary
+
+                        readonly property var jToday: Calendar.toJalali(today)
+
+                        readonly property string monthLabel: shamsi
+                            ? `${Calendar.monthsFa[jToday.m - 1]} ${jToday.y}`
+                            : Qt.formatDate(today, "MMMM yyyy")
+
+                        readonly property string subLabel: shamsi
+                            ? Qt.formatDate(today, "MMMM yyyy")
+                            : `${Calendar.monthsFa[jToday.m - 1]} ${jToday.y}`
 
                         readonly property var days: {
+                            const out = [];
+                            const today = calendarCard.today;
+
+                            if (calendarCard.shamsi) {
+                                const j = Calendar.toJalali(today);
+                                const first = Calendar.fromJalali(j.y, j.m, 1);
+                                const lead = (first.getDay() + 1) % 7;
+                                const len = Calendar.jalaliMonthLength(j.y, j.m);
+
+                                for (let i = 0; i < 42; i++) {
+                                    const offset = i - lead;
+                                    const d = new Date(first);
+                                    d.setDate(first.getDate() + offset);
+                                    const jd = Calendar.toJalali(d);
+                                    out.push({
+                                        day: jd.d,
+                                        alt: d.getDate(),
+                                        inMonth: offset >= 0 && offset < len,
+                                        isToday: d.toDateString() === today.toDateString(),
+                                        busy: Calendar.eventsOn(d).length > 0
+                                    });
+                                }
+                                return out;
+                            }
+
                             const y = today.getFullYear();
                             const m = today.getMonth();
                             const first = new Date(y, m, 1);
                             const lead = (first.getDay() + 6) % 7;
-                            const out = [];
+
                             for (let i = 0; i < 42; i++) {
                                 const d = new Date(y, m, i - lead + 1);
                                 out.push({
                                     day: d.getDate(),
+                                    alt: Calendar.toJalali(d).d,
                                     inMonth: d.getMonth() === m,
-                                    isToday: d.toDateString() === today.toDateString()
+                                    isToday: d.toDateString() === today.toDateString(),
+                                    busy: Calendar.eventsOn(d).length > 0
                                 });
                             }
                             return out;
                         }
 
-                        Grid {
-                            anchors.centerIn: parent
-                            columns: 7
-                            columnSpacing: 4
-                            rowSpacing: 2
+                        Column {
+                            anchors.fill: parent
+                            anchors.margins: 12
+                            spacing: 6
 
-                            Repeater {
-                                model: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+                            Row {
+                                width: parent.width
+                                spacing: 8
 
-                                Text {
-                                    required property string modelData
+                                Column {
+                                    width: parent.width - toggle.width - 8
+                                    spacing: 1
 
-                                    width: 42
-                                    horizontalAlignment: Text.AlignHCenter
-                                    text: modelData
-                                    color: Theme.subtext
-                                    font.family: Theme.font
-                                    font.pixelSize: 11
-                                    font.weight: Font.DemiBold
+                                    Text {
+                                        text: calendarCard.monthLabel
+                                        color: Theme.text
+                                        font.family: Theme.font
+                                        font.pixelSize: 12
+                                        font.weight: Font.DemiBold
+                                    }
+
+                                    Text {
+                                        text: calendarCard.subLabel
+                                        color: Theme.faint
+                                        font.family: Theme.fontMono
+                                        font.pixelSize: 9
+                                        font.letterSpacing: Theme.trackingWide
+                                    }
                                 }
-                            }
-
-                            Repeater {
-                                model: calendarCard.days
 
                                 Rectangle {
-                                    required property var modelData
+                                    id: toggle
 
-                                    width: 42
-                                    height: 26
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: 44
+                                    height: 20
                                     radius: Theme.radiusSm
-                                    color: modelData.isToday
-                                        ? Theme.alpha(Theme.accent, 0.28)
-                                        : "transparent"
+                                    color: toggleMouse.containsMouse
+                                        ? Theme.surfaceHover
+                                        : Theme.alpha(Theme.surface, 0.7)
+                                    border.width: 1
+                                    border.color: Theme.rimSoft
+
+                                    Behavior on color { ColorAnimation { duration: Theme.animFast } }
 
                                     Text {
                                         anchors.centerIn: parent
-                                        text: modelData.day
-                                        color: modelData.isToday
-                                            ? Theme.text
-                                            : modelData.inMonth ? Theme.subtext : Theme.faint
+                                        text: calendarCard.shamsi ? "SHAMSI" : "GREG"
+                                        color: calendarCard.shamsi ? Theme.accent : Theme.subtext
+                                        font.family: Theme.fontMono
+                                        font.pixelSize: 9
+                                        font.letterSpacing: Theme.trackingWide
+                                    }
+
+                                    MouseArea {
+                                        id: toggleMouse
+
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: Calendar.togglePrimary()
+                                    }
+                                }
+                            }
+
+                            Grid {
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                columns: 7
+                                columnSpacing: 3
+                                rowSpacing: 1
+
+                                Repeater {
+                                    model: calendarCard.shamsi
+                                        ? Calendar.weekdaysFa
+                                        : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+
+                                    Text {
+                                        required property string modelData
+
+                                        width: 40
+                                        horizontalAlignment: Text.AlignHCenter
+                                        text: modelData
+                                        color: Theme.subtext
                                         font.family: Theme.font
-                                        font.pixelSize: 11
+                                        font.pixelSize: 10
+                                        font.weight: Font.DemiBold
+                                    }
+                                }
+
+                                Repeater {
+                                    model: calendarCard.days
+
+                                    Rectangle {
+                                        required property var modelData
+
+                                        width: 40
+                                        height: 24
+                                        radius: Theme.radiusSm
+                                        color: modelData.isToday
+                                            ? Theme.alpha(Theme.accent, 0.28)
+                                            : "transparent"
+
+                                        Row {
+                                            anchors.centerIn: parent
+                                            spacing: 3
+
+                                            Text {
+                                                anchors.verticalCenter: parent.verticalCenter
+                                                text: modelData.day
+                                                color: modelData.isToday
+                                                    ? Theme.text
+                                                    : modelData.inMonth
+                                                        ? Theme.subtext
+                                                        : Theme.faint
+                                                font.family: Theme.font
+                                                font.pixelSize: 11
+                                            }
+
+                                            Text {
+                                                anchors.verticalCenter: parent.verticalCenter
+                                                text: modelData.alt
+                                                color: Theme.faint
+                                                opacity: modelData.inMonth ? 0.75 : 0.4
+                                                font.family: Theme.fontMono
+                                                font.pixelSize: 7
+                                            }
+                                        }
+
+                                        Rectangle {
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            anchors.bottom: parent.bottom
+                                            anchors.bottomMargin: 1
+
+                                            width: 8
+                                            height: 1
+                                            visible: modelData.busy && modelData.inMonth
+                                            color: Theme.accent
+                                        }
                                     }
                                 }
                             }
@@ -983,6 +1117,150 @@ PanelWindow {
                                             Globals.focusWorkspace(ws.modelData.id);
                                             Globals.dashboard = false;
                                         }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Item {
+                    id: agendaPane
+
+                    implicitWidth: 560
+                    implicitHeight: 300
+
+                    width: implicitWidth
+                    height: implicitHeight
+
+                    Card {
+                        anchors.fill: parent
+
+                        Column {
+                            anchors.fill: parent
+                            anchors.margins: 20
+                            spacing: 10
+
+                            Row {
+                                width: parent.width
+                                spacing: 8
+
+                                Column {
+                                    width: parent.width - 120
+                                    spacing: 1
+
+                                    Text {
+                                        text: Calendar.shamsiPrimary
+                                            ? Calendar.jalaliLabel(clock.date)
+                                            : Qt.formatDate(clock.date, "dddd, d MMMM yyyy")
+                                        color: Theme.text
+                                        font.family: Theme.font
+                                        font.pixelSize: 15
+                                        font.weight: Font.DemiBold
+                                    }
+
+                                    Text {
+                                        text: Calendar.shamsiPrimary
+                                            ? Qt.formatDate(clock.date, "dddd, d MMMM yyyy")
+                                            : Calendar.jalaliLabel(clock.date)
+                                        color: Theme.faint
+                                        font.family: Theme.font
+                                        font.pixelSize: 10
+                                    }
+                                }
+
+                                Text {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: Calendar.upcoming.length > 0
+                                        ? Calendar.upcoming.length + " UPCOMING"
+                                        : "CLEAR"
+                                    color: Theme.faint
+                                    font.family: Theme.fontMono
+                                    font.pixelSize: 9
+                                    font.letterSpacing: Theme.trackingWide
+                                }
+                            }
+
+                            Rectangle {
+                                width: parent.width
+                                height: 1
+                                color: Theme.alpha(Theme.faint, 0.4)
+                            }
+
+                            Text {
+                                width: parent.width
+                                visible: Calendar.upcoming.length === 0
+                                text: "NOTHING SCHEDULED \u00b7 ~/.config/kyber/agenda.txt"
+                                color: Theme.faint
+                                font.family: Theme.fontMono
+                                font.pixelSize: 9
+                                font.letterSpacing: Theme.trackingWide
+                            }
+
+                            Repeater {
+                                model: Calendar.upcoming.slice(0, 6)
+
+                                Row {
+                                    id: agendaRow
+
+                                    required property var modelData
+
+                                    readonly property bool isToday:
+                                        modelData.date.toDateString()
+                                            === clock.date.toDateString()
+
+                                    width: parent.width
+                                    height: 34
+                                    spacing: 12
+
+                                    Rectangle {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        width: 2
+                                        height: 20
+                                        radius: 1
+                                        color: agendaRow.isToday ? Theme.accent : Theme.faint
+                                    }
+
+                                    Column {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        width: 96
+                                        spacing: 1
+
+                                        Text {
+                                            text: agendaRow.isToday
+                                                ? "TODAY"
+                                                : Qt.formatDate(agendaRow.modelData.date, "ddd d MMM")
+                                            color: agendaRow.isToday ? Theme.accent : Theme.subtext
+                                            font.family: Theme.fontMono
+                                            font.pixelSize: 9
+                                            font.letterSpacing: Theme.trackingWide
+                                        }
+
+                                        Text {
+                                            text: Calendar.jalaliLabel(agendaRow.modelData.date)
+                                            color: Theme.faint
+                                            font.family: Theme.font
+                                            font.pixelSize: 9
+                                        }
+                                    }
+
+                                    Text {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        width: 44
+                                        text: agendaRow.modelData.time
+                                        color: Theme.subtext
+                                        font.family: Theme.fontMono
+                                        font.pixelSize: 10
+                                    }
+
+                                    Text {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        width: parent.width - 178
+                                        text: agendaRow.modelData.title
+                                        color: Theme.text
+                                        font.family: Theme.font
+                                        font.pixelSize: 12
+                                        elide: Text.ElideRight
                                     }
                                 }
                             }
