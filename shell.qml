@@ -25,6 +25,7 @@ ShellRoot {
             MediaPopover { screen: modelData; screenName: modelData.name }
             LevelOsd { screen: modelData; screenName: modelData.name }
             ClipboardPanel { screen: modelData; screenName: modelData.name }
+            Runner { screen: modelData; screenName: modelData.name }
         }
     }
 
@@ -33,6 +34,10 @@ ShellRoot {
 
         function toggleLauncher(): void {
             Globals.toggleLauncher();
+        }
+
+        function toggleRunner(): void {
+            Globals.toggleRunner();
         }
 
         function toggleClipboard(): void {

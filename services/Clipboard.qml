@@ -8,7 +8,7 @@ Singleton {
     id: root
 
     property var history: []
-    readonly property int limit: 100
+    readonly property int limit: 20
 
     property bool loaded: false
 

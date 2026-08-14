@@ -13,9 +13,11 @@ Singleton {
     property bool dnd: false
     property bool dashboard: false
     property bool clipboard: false
+    property bool runner: false
 
     property real notchX: 0
     property real notchWidth: 0
+    onNotchWidthChanged: console.log("NOTCH", notchX, notchWidth)
 
     property real launcherNotchY: 0
     property real launcherNotchHeight: 0
@@ -69,6 +71,7 @@ Singleton {
         controlCenter = false;
         dashboard = false;
         clipboard = false;
+        runner = false;
     }
 
     function toggleLauncher() {
@@ -76,6 +79,7 @@ Singleton {
         dashboard = false;
         clipboard = false;
         launcher = !launcher;
+        runner = false;
     }
 
     function toggleClipboard() {
@@ -83,6 +87,7 @@ Singleton {
         dashboard = false;
         launcher = false;
         clipboard = !clipboard;
+        runner = false;
     }
 
     function toggleControlCenter() {
@@ -90,6 +95,7 @@ Singleton {
         clipboard = false;
         dashboard = false;
         controlCenter = !controlCenter;
+        runner = false;
     }
 
     function toggleDashboard() {
@@ -97,5 +103,14 @@ Singleton {
         clipboard = false;
         controlCenter = false;
         dashboard = !dashboard;
+        runner = false;
+    }
+
+    function toggleRunner() {
+        launcher = false;
+        clipboard = false;
+        controlCenter = false;
+        dashboard = false;
+        runner = !runner;
     }
 }
