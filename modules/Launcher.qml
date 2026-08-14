@@ -320,8 +320,8 @@ PanelWindow {
                         AppIcon {
                             anchors.verticalCenter: parent.verticalCenter
                             size: 30
-                            name: row.modelData.icon
-                            glyph: ""
+                            name: Theme.monoAppIcons ? "" : row.modelData.icon
+                            glyph: AppGlyphs.forEntry(row.modelData)
                         }
 
                         Column {

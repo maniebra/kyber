@@ -215,8 +215,10 @@ PanelWindow {
                     AppIcon {
                         anchors.centerIn: parent
                         size: 20
-                        name: item.modelData.entry?.icon ?? ""
-                        glyph: ""
+                        name: Theme.monoAppIcons
+                            ? ""
+                            : (item.modelData.entry?.icon ?? "")
+                        glyph: AppGlyphs.forEntry(item.modelData.entry)
                     }
 
                     Rectangle {

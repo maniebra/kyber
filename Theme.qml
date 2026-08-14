@@ -30,6 +30,9 @@ Singleton {
     readonly property string font: "SF Pro Text"
     readonly property string fontMono: "JetBrainsMono Nerd Font"
     readonly property string fontIcon: "lucide"
+
+    // draw apps with the lucide set instead of the system icon theme
+    readonly property bool monoAppIcons: true
     readonly property int fontSize: 11
     readonly property int fontSizeSm: 9
     readonly property real tracking: 0.2

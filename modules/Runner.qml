@@ -134,7 +134,8 @@ PanelWindow {
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .slice(0, 40)
                 .map(a => ({
-                    icon: a.icon,
+                    icon: Theme.monoAppIcons ? "" : a.icon,
+                    glyph: AppGlyphs.forEntry(a),
                     title: a.name,
                     subtitle: a.genericName || a.comment || "application",
                     act: () => a.execute()
@@ -197,7 +198,8 @@ PanelWindow {
         scored.sort((a, b) => a.score - b.score || a.app.name.localeCompare(b.app.name));
         for (const e of scored.slice(0, 6))
             out.push({
-                icon: e.app.icon,
+                icon: Theme.monoAppIcons ? "" : e.app.icon,
+                glyph: AppGlyphs.forEntry(e.app),
                 title: e.app.name,
                 subtitle: e.app.genericName || e.app.comment || "application",
                 act: () => e.app.execute()
