@@ -361,7 +361,7 @@ PanelWindow {
                 spacing: 8
 
                 readonly property int faderWidth: 34
-                readonly property int faders: Brightness.available ? 2 : 1
+                readonly property int faders: Brightness.available ? 3 : 2
 
                 Rectangle {
                     id: mediaCard
@@ -493,6 +493,14 @@ PanelWindow {
                     icon: Audio.icon
                     value: Audio.volume
                     onMoved: v => Audio.setVolume(v)
+                }
+
+                NeonSlider {
+                    width: mediaRow.faderWidth
+                    height: parent.height
+                    icon: Audio.micIcon
+                    value: Audio.micVolume
+                    onMoved: v => Audio.setMicVolume(v)
                 }
 
                 NeonSlider {

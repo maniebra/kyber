@@ -12,6 +12,9 @@ Singleton {
     readonly property real volume: sink?.audio?.volume ?? 0
     readonly property bool muted: sink?.audio?.muted ?? false
     readonly property bool micMuted: source?.audio?.muted ?? true
+    readonly property real micVolume: source?.audio?.volume ?? 0
+
+    readonly property string micIcon: micMuted || micVolume <= 0.001 ? "" : ""
 
     readonly property string icon: muted || volume <= 0.001
         ? ""
@@ -22,6 +25,11 @@ Singleton {
     function setVolume(v) {
         if (sink?.audio)
             sink.audio.volume = Math.max(0, Math.min(1, v));
+    }
+
+    function setMicVolume(v) {
+        if (source?.audio)
+            source.audio.volume = Math.max(0, Math.min(1, v));
     }
 
     function nudge(delta) {
