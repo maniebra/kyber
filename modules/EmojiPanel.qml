@@ -1,5 +1,4 @@
 import Quickshell
-import Quickshell.Io
 import Quickshell.Wayland
 import QtQuick
 
@@ -24,8 +23,7 @@ PanelWindow {
 
     WlrLayershell.namespace: "kyber-emoji"
     WlrLayershell.layer: WlrLayer.Overlay
-    // focus is handed back to the app while typing, so wtype lands there
-    WlrLayershell.keyboardFocus: shouldOpen && !typing
+    WlrLayershell.keyboardFocus: shouldOpen
         ? WlrKeyboardFocus.Exclusive
         : WlrKeyboardFocus.None
 
@@ -41,7 +39,6 @@ PanelWindow {
     exclusionMode: ExclusionMode.Ignore
 
     onShouldOpenChanged: {
-        typing = false;
         if (shouldOpen) {
             search.text = "";
             group = 0;
@@ -72,76 +69,12 @@ PanelWindow {
             .slice(0, 400);
     }
 
-    // wtype types into whatever has focus, so the panel drops its exclusive
-    // keyboard focus for a moment, types, then takes it back and stays open.
-    // No wtype on PATH: fall back to the clipboard and close.
-    property bool canType: false
-    property bool typing: false
-
-    Process {
-        running: true
-        command: ["sh", "-c", "command -v wtype"]
-        stdout: StdioCollector {
-            onStreamFinished: root.canType = text.trim() !== ""
-        }
-    }
-
-    Timer {
-        id: typeDelay
-
-        // let the compositor deliver the focus change to the app first
-        interval: 150
-        onTriggered: {
-            // Paste rather than type the glyph: wtype's own keymap is the part
-            // clients mis-decode (Hyprland reports it as "error" and the app
-            // fires whatever key used to sit at that keycode). Ctrl+V is a
-            // plain keysym, so nothing has to be remapped.
-            typer.command = ["wtype", "-s", "60", "-M", "ctrl", "-k", "v",
-                "-m", "ctrl"];
-            typer.running = true;
-        }
-    }
-
-    Process {
-        id: typer
-
-        // focus is only taken back once wtype has actually finished, otherwise
-        // the panel grabs the keyboard mid-type and eats the glyph
-        onExited: {
-            root.typing = false;
-            search.forceActiveFocus();
-        }
-    }
-
-    // Return arms on press, fires on release
-    property var armed: undefined
-
-    function arm(event) {
-        event.accepted = true;
-        if (event.isAutoRepeat)
-            return;
-        root.armed = root.results[grid.currentIndex];
-    }
-
-    function fire() {
-        const entry = root.armed;
-        root.armed = undefined;
-        root.pick(entry);
-    }
-
     function pick(entry) {
         if (entry === undefined)
             return;
 
-        if (!root.canType) {
-            Globals.emoji = false;
-            Clipboard.copy(entry[0]);
-            return;
-        }
-
         Clipboard.copy(entry[0]);
-        root.typing = true;
-        typeDelay.restart();
+        Globals.emoji = false;
     }
 
     MouseArea {
@@ -200,8 +133,8 @@ PanelWindow {
             anchors.verticalCenter: parent.verticalCenter
             x: -width * Math.max(0, root.slide)
 
-            width: Math.min(420, root.width - 80)
-            height: 64 + (root.results.length ? 6 * 46 + 42 : 40)
+            width: Math.min(352, root.width - 80)
+            height: 64 + (root.results.length ? 5 * 41 + 38 : 40)
             radius: Theme.radius + 4
             squareLeft: true
 
@@ -294,19 +227,8 @@ PanelWindow {
                         }
                     }
 
-                    // hold the pick until Return is released, otherwise the
-                    // key event follows the focus into the app underneath
-                    Keys.onReturnPressed: event => root.arm(event)
-                    Keys.onEnterPressed: event => root.arm(event)
-
-                    Keys.onReleased: event => {
-                        if (event.key === Qt.Key_Return
-                                || event.key === Qt.Key_Enter) {
-                            event.accepted = true;
-                            if (!event.isAutoRepeat)
-                                root.fire();
-                        }
-                    }
+                    Keys.onReturnPressed: root.pick(root.results[grid.currentIndex])
+                    Keys.onEnterPressed: root.pick(root.results[grid.currentIndex])
                 }
 
                 Text {
@@ -478,7 +400,7 @@ PanelWindow {
                             anchors.centerIn: parent
                             text: cell.modelData[0]
                             color: Theme.text
-                            font.pixelSize: Math.round(grid.cellHeight * 0.5)
+                            font.pixelSize: Math.round(grid.cellHeight * 0.46)
                         }
                     }
 

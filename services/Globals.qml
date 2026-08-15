@@ -14,6 +14,7 @@ Singleton {
     property bool dashboard: false
     property bool clipboard: false
     property bool runner: false
+    property bool emoji: false
 
     property real notchX: 0
     property real notchWidth: 0
@@ -72,6 +73,7 @@ Singleton {
         dashboard = false;
         clipboard = false;
         runner = false;
+        emoji = false;
     }
 
     function toggleLauncher() {
@@ -80,6 +82,7 @@ Singleton {
         clipboard = false;
         launcher = !launcher;
         runner = false;
+        emoji = false;
     }
 
     function toggleClipboard() {
@@ -88,6 +91,7 @@ Singleton {
         launcher = false;
         clipboard = !clipboard;
         runner = false;
+        emoji = false;
     }
 
     function toggleControlCenter() {
@@ -96,6 +100,7 @@ Singleton {
         dashboard = false;
         controlCenter = !controlCenter;
         runner = false;
+        emoji = false;
     }
 
     function toggleDashboard() {
@@ -104,6 +109,7 @@ Singleton {
         controlCenter = false;
         dashboard = !dashboard;
         runner = false;
+        emoji = false;
     }
 
     function toggleRunner() {
@@ -112,5 +118,15 @@ Singleton {
         controlCenter = false;
         dashboard = false;
         runner = !runner;
+        emoji = false;
+    }
+
+    function toggleEmoji() {
+        launcher = false;
+        clipboard = false;
+        controlCenter = false;
+        dashboard = false;
+        runner = false;
+        emoji = !emoji;
     }
 }

@@ -140,10 +140,50 @@ PanelWindow {
         }
 
         Rectangle {
-            id: clipButton
+            id: emojiButton
 
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: kbdLabel.visible ? kbdLabel.bottom : menuButton.bottom
+            anchors.topMargin: 8
+
+            width: 26
+            height: 26
+            radius: Theme.radiusSm
+
+            color: Globals.emoji
+                ? Theme.alpha(Theme.accent, 0.16)
+                : emojiMouse.containsMouse
+                    ? Theme.surfaceHover
+                    : "transparent"
+
+            Behavior on color { ColorAnimation { duration: Theme.animFast } }
+
+            Text {
+                anchors.centerIn: parent
+                text: ""
+                font.family: Theme.fontIcon
+                font.pixelSize: 14
+                color: Globals.emoji ? Theme.accent : Theme.subtext
+
+                Behavior on color { ColorAnimation { duration: Theme.animFast } }
+            }
+
+            MouseArea {
+                id: emojiMouse
+
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+
+                onClicked: Globals.toggleEmoji()
+            }
+        }
+
+        Rectangle {
+            id: clipButton
+
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: emojiButton.bottom
             anchors.topMargin: 8
 
             width: 26
