@@ -1107,7 +1107,9 @@ PanelWindow {
                                     model: [
                                         { k: "HOST", v: SysInfo.host || SysInfo.user },
                                         { k: "DISTRO", v: SysInfo.distro },
-                                        { k: "UPTIME", v: SysInfo.uptime }
+                                        { k: "UPTIME", v: SysInfo.uptime },
+                                        { k: "NET DOWN", v: SysInfo.formatRate(SysInfo.rxRate) },
+                                        { k: "NET UP", v: SysInfo.formatRate(SysInfo.txRate) }
                                     ]
 
                                     Column {

@@ -17,6 +17,21 @@ Singleton {
 
     property int uptimeSeconds: 0
 
+    // bytes per second, summed over non-loopback interfaces
+    property real rxRate: 0
+    property real txRate: 0
+
+    property int _lastRx: 0
+    property int _lastTx: 0
+
+    function formatRate(bytes: real): string {
+        if (bytes >= 1024 * 1024)
+            return `${(bytes / 1024 / 1024).toFixed(1)} MB/s`;
+        if (bytes >= 1024)
+            return `${Math.round(bytes / 1024)} KB/s`;
+        return `${Math.round(bytes)} B/s`;
+    }
+
     readonly property string uptime: {
         const d = Math.floor(uptimeSeconds / 86400);
         const h = Math.floor((uptimeSeconds % 86400) / 3600);
@@ -54,6 +69,33 @@ Singleton {
             stat.reload();
             meminfo.reload();
             uptimeFile.reload();
+            netdev.reload();
+        }
+    }
+
+    FileView {
+        id: netdev
+        path: "/proc/net/dev"
+
+        readonly property int intervalSec: 2
+
+        onLoaded: {
+            let rx = 0, tx = 0;
+            for (const line of text().split("\n")) {
+                const m = line.match(/^\s*([\w.-]+):\s*(\d+)(?:\s+\d+){7}\s+(\d+)/);
+                if (!m || m[1] === "lo")
+                    continue;
+                rx += parseInt(m[2]);
+                tx += parseInt(m[3]);
+            }
+
+            if (root._lastRx > 0) {
+                root.rxRate = Math.max(0, (rx - root._lastRx) / intervalSec);
+                root.txRate = Math.max(0, (tx - root._lastTx) / intervalSec);
+            }
+
+            root._lastRx = rx;
+            root._lastTx = tx;
         }
     }
 
