@@ -167,9 +167,9 @@ PanelWindow {
                     width: 36
                     height: 36
                     radius: 5
-                    color: Theme.alpha(Theme.cyan, 0.24)
+                    color: Theme.alpha(Theme.accent, 0.24)
                     border.width: 1
-                    border.color: Theme.alpha(Theme.cyan, 0.45)
+                    border.color: Theme.alpha(Theme.accent, 0.45)
 
                     Brackets {
                         inset: 2
@@ -182,7 +182,7 @@ PanelWindow {
                     Text {
                         anchors.centerIn: parent
                         text: (SysInfo.user[0] ?? "?").toUpperCase()
-                        color: Theme.cyan
+                        color: Theme.accent
                         font.family: Theme.font
                         font.pixelSize: 16
                         font.bold: true
@@ -234,7 +234,7 @@ PanelWindow {
 
                     Repeater {
                     model: [
-                        { glyph: "", page: 1, tint: Theme.cyan },
+                        { glyph: "", page: 1, tint: Theme.accent },
                         { glyph: "", page: 3, tint: Theme.accent },
                         { glyph: "", page: 2, tint: Theme.red }
                     ]
@@ -287,7 +287,7 @@ PanelWindow {
                     label: Network.wifiEnabled ? "Wi-Fi" : "Wi-Fi off"
                     sublabel: Network.label
                     active: Network.connected
-                    accent: Theme.cyan
+                    accent: Theme.accent
 
                     onClicked: Network.toggleWifi()
                     onSecondaryClicked: root.page = 1
@@ -684,7 +684,7 @@ PanelWindow {
 
                     Text {
                         text: "rescan"
-                        color: rescan.containsMouse ? Theme.cyan : Theme.faint
+                        color: rescan.containsMouse ? Theme.accent : Theme.faint
                         font.family: Theme.fontMono
                         font.pixelSize: 9
 
@@ -703,7 +703,7 @@ PanelWindow {
 
                     Text {
                         text: "nmtui"
-                        color: editor.containsMouse ? Theme.cyan : Theme.faint
+                        color: editor.containsMouse ? Theme.accent : Theme.faint
                         font.family: Theme.fontMono
                         font.pixelSize: 9
 
@@ -834,7 +834,7 @@ PanelWindow {
                         height: expanded ? 66 : 32
                         radius: Theme.radiusSm
                         color: modelData.active
-                            ? Theme.alpha(Theme.cyan, 0.16)
+                            ? Theme.alpha(Theme.accent, 0.16)
                             : apMouse.containsMouse
                                 ? Theme.surfaceHover
                                 : Theme.alpha(Theme.surface, 0.7)
@@ -854,7 +854,7 @@ PanelWindow {
                             Text {
                                 anchors.verticalCenter: parent.verticalCenter
                                 text: ap.modelData.secured ? "\ue10b" : "\ue1ae"
-                                color: ap.modelData.active ? Theme.cyan : Theme.faint
+                                color: ap.modelData.active ? Theme.accent : Theme.faint
                                 font.family: Theme.fontIcon
                                 font.pixelSize: 12
                             }
