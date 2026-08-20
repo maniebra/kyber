@@ -1073,6 +1073,7 @@ PanelWindow {
                     }
                 }
             }
+                }
                 Column {
                     id: btPage
 
@@ -1329,7 +1330,6 @@ PanelWindow {
                             }
                         }
                     }
-                }
                 }
             }
         }
