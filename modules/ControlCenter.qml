@@ -154,124 +154,124 @@ PanelWindow {
                     width: viewport.width
                     spacing: 12
 
-            Item {
-                width: parent.width
-                height: 36
+                    Item {
+                        width: parent.width
+                        height: 36
 
-                Row {
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 10
-
-                Rectangle {
-                    width: 36
-                    height: 36
-                    radius: 5
-                    color: Theme.alpha(Theme.accent, 0.24)
-                    border.width: 1
-                    border.color: Theme.alpha(Theme.accent, 0.45)
-
-                    Brackets {
-                        inset: 2
-                        arm: 6
-                        topLeft: true
-                        bottomRight: true
-                        strength: 1
-                    }
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: (SysInfo.user[0] ?? "?").toUpperCase()
-                        color: Theme.accent
-                        font.family: Theme.font
-                        font.pixelSize: 16
-                        font.bold: true
-                    }
-                }
-
-                Column {
-                    id: identityText
-
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 2
-
-                    Row {
-                        spacing: 6
-
-                        Text {
-                            text: SysInfo.user.toUpperCase()
-                            color: Theme.text
-                            font.family: Theme.font
-                            font.pixelSize: 13
-                            font.weight: Font.DemiBold
-                            font.letterSpacing: Theme.trackingWide
-                        }
-
-                        Text {
+                        Row {
+                            anchors.left: parent.left
                             anchors.verticalCenter: parent.verticalCenter
-                            text: "//SYS.CTRL"
-                            color: Theme.alpha(Theme.accent, 0.7)
-                            font.family: Theme.fontMono
-                            font.pixelSize: 8
-                            font.letterSpacing: Theme.trackingWide
-                        }
-                    }
+                            spacing: 10
 
-                    Text {
-                        text: `up ${SysInfo.uptime} · ${SysInfo.memUsedMb}/${SysInfo.memTotalMb} MB`
-                        color: Theme.faint
-                        font.family: Theme.fontMono
-                        font.pixelSize: 9
-                    }
-                }
+                        Rectangle {
+                            width: 36
+                            height: 36
+                            radius: 5
+                            color: Theme.alpha(Theme.accent, 0.24)
+                            border.width: 1
+                            border.color: Theme.alpha(Theme.accent, 0.45)
 
-                }
+                            Brackets {
+                                inset: 2
+                                arm: 6
+                                topLeft: true
+                                bottomRight: true
+                                strength: 1
+                            }
 
-                Row {
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 2
-
-                    Repeater {
-                    model: [
-                        { glyph: "", page: 1, tint: Theme.accent },
-                        { glyph: "", page: 3, tint: Theme.accent },
-                        { glyph: "", page: 2, tint: Theme.red }
-                    ]
-
-                    Rectangle {
-                        id: nav
-
-                        required property var modelData
-
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 30
-                        height: 30
-                        radius: Theme.radiusSm
-                        color: navMouse.containsMouse ? Theme.surfaceHover : "transparent"
-
-                        Behavior on color { ColorAnimation { duration: Theme.animFast } }
-
-                        Text {
-                            anchors.centerIn: parent
-                            text: nav.modelData.glyph
-                            color: navMouse.containsMouse ? nav.modelData.tint : Theme.subtext
-                            font.family: Theme.fontIcon
-                            font.pixelSize: 14
+                            Text {
+                                anchors.centerIn: parent
+                                text: (SysInfo.user[0] ?? "?").toUpperCase()
+                                color: Theme.accent
+                                font.family: Theme.font
+                                font.pixelSize: 16
+                                font.bold: true
+                            }
                         }
 
-                        MouseArea {
-                            id: navMouse
+                        Column {
+                            id: identityText
 
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: root.page = nav.modelData.page
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Row {
+                                spacing: 6
+
+                                Text {
+                                    text: SysInfo.user.toUpperCase()
+                                    color: Theme.text
+                                    font.family: Theme.font
+                                    font.pixelSize: 13
+                                    font.weight: Font.DemiBold
+                                    font.letterSpacing: Theme.trackingWide
+                                }
+
+                                Text {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: "//SYS.CTRL"
+                                    color: Theme.alpha(Theme.accent, 0.7)
+                                    font.family: Theme.fontMono
+                                    font.pixelSize: 8
+                                    font.letterSpacing: Theme.trackingWide
+                                }
+                            }
+
+                            Text {
+                                text: `up ${SysInfo.uptime} · ${SysInfo.memUsedMb}/${SysInfo.memTotalMb} MB`
+                                color: Theme.faint
+                                font.family: Theme.fontMono
+                                font.pixelSize: 9
+                            }
+                        }
+
+                        }
+
+                        Row {
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 2
+
+                            Repeater {
+                            model: [
+                                { glyph: "", page: 1, tint: Theme.accent },
+                                { glyph: "", page: 3, tint: Theme.accent },
+                                { glyph: "", page: 2, tint: Theme.red }
+                            ]
+
+                            Rectangle {
+                                id: nav
+
+                                required property var modelData
+
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: 30
+                                height: 30
+                                radius: Theme.radiusSm
+                                color: navMouse.containsMouse ? Theme.surfaceHover : "transparent"
+
+                                Behavior on color { ColorAnimation { duration: Theme.animFast } }
+
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: nav.modelData.glyph
+                                    color: navMouse.containsMouse ? nav.modelData.tint : Theme.subtext
+                                    font.family: Theme.fontIcon
+                                    font.pixelSize: 14
+                                }
+
+                                MouseArea {
+                                    id: navMouse
+
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: root.page = nav.modelData.page
+                                }
+                            }
+                            }
                         }
                     }
-                    }
-                }
-            }
 
             Grid {
                 width: parent.width
@@ -670,303 +670,303 @@ PanelWindow {
                             : Network.scanning ? "Scanning…" : "Networks"
                     }
 
-            Column {
-                width: parent.width
-                spacing: 6
-
-                Row {
-                    width: parent.width
-
-                    Item {
-                        width: parent.width - 80
-                        height: 1
-                    }
-
-                    Text {
-                        text: "rescan"
-                        color: rescan.containsMouse ? Theme.accent : Theme.faint
-                        font.family: Theme.fontMono
-                        font.pixelSize: 9
-
-                        MouseArea {
-                            id: rescan
-
-                            anchors.fill: parent
-                            anchors.margins: -6
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: Network.scan()
-                        }
-                    }
-
-                    Item { width: 10; height: 1 }
-
-                    Text {
-                        text: "nmtui"
-                        color: editor.containsMouse ? Theme.accent : Theme.faint
-                        font.family: Theme.fontMono
-                        font.pixelSize: 9
-
-                        MouseArea {
-                            id: editor
-
-                            anchors.fill: parent
-                            anchors.margins: -6
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: Network.openEditor()
-                        }
-                    }
-                }
-
-                Text {
-                    width: parent.width
-                    text: Network.error
-                    visible: text !== ""
-                    color: Theme.magenta
-                    font.family: Theme.fontMono
-                    font.pixelSize: 9
-                    wrapMode: Text.WordWrap
-                }
-
                     Column {
                         width: parent.width
                         spacing: 6
-                        visible: Network.vpns.length > 0
 
-                        Text {
-                            text: "VPN"
-                            color: Theme.faint
-                            font.family: Theme.fontMono
-                            font.pixelSize: 9
-                            font.letterSpacing: Theme.trackingWide
+                        Row {
+                            width: parent.width
+
+                            Item {
+                                width: parent.width - 80
+                                height: 1
+                            }
+
+                            Text {
+                                text: "rescan"
+                                color: rescan.containsMouse ? Theme.accent : Theme.faint
+                                font.family: Theme.fontMono
+                                font.pixelSize: 9
+
+                                MouseArea {
+                                    id: rescan
+
+                                    anchors.fill: parent
+                                    anchors.margins: -6
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: Network.scan()
+                                }
+                            }
+
+                            Item { width: 10; height: 1 }
+
+                            Text {
+                                text: "nmtui"
+                                color: editor.containsMouse ? Theme.accent : Theme.faint
+                                font.family: Theme.fontMono
+                                font.pixelSize: 9
+
+                                MouseArea {
+                                    id: editor
+
+                                    anchors.fill: parent
+                                    anchors.margins: -6
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: Network.openEditor()
+                                }
+                            }
                         }
 
+                        Text {
+                            width: parent.width
+                            text: Network.error
+                            visible: text !== ""
+                            color: Theme.magenta
+                            font.family: Theme.fontMono
+                            font.pixelSize: 9
+                            wrapMode: Text.WordWrap
+                        }
+
+                            Column {
+                                width: parent.width
+                                spacing: 6
+                                visible: Network.vpns.length > 0
+
+                                Text {
+                                    text: "VPN"
+                                    color: Theme.faint
+                                    font.family: Theme.fontMono
+                                    font.pixelSize: 9
+                                    font.letterSpacing: Theme.trackingWide
+                                }
+
+                                Repeater {
+                                    model: Network.vpns
+
+                                    Rectangle {
+                                        id: vpnRow
+
+                                        required property var modelData
+
+                                        width: parent.width
+                                        height: 44
+                                        radius: Theme.radiusSm + 2
+
+                                        color: vpnRow.modelData.active
+                                            ? Theme.alpha(Theme.lime, 0.14)
+                                            : vpnHover.containsMouse
+                                                ? Theme.surfaceHover
+                                                : Theme.alpha(Theme.surface, 0.7)
+
+                                        border.width: 1
+                                        border.color: vpnRow.modelData.active
+                                            ? Theme.alpha(Theme.lime, 0.35)
+                                            : Theme.rimSoft
+
+                                        Behavior on color { ColorAnimation { duration: Theme.animFast } }
+
+                                        Text {
+                                            id: vpnIcon
+
+                                            anchors.left: parent.left
+                                            anchors.leftMargin: 12
+                                            anchors.verticalCenter: parent.verticalCenter
+
+                                            text: vpnRow.modelData.active ? "\ue1ff" : "\ue158"
+                                            color: vpnRow.modelData.active ? Theme.lime : Theme.subtext
+                                            font.family: Theme.fontIcon
+                                            font.pixelSize: 14
+                                        }
+
+                                        Column {
+                                            anchors.left: vpnIcon.right
+                                            anchors.leftMargin: 12
+                                            anchors.right: parent.right
+                                            anchors.rightMargin: 12
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            spacing: 1
+
+                                            Text {
+                                                width: parent.width
+                                                text: vpnRow.modelData.name
+                                                color: Theme.text
+                                                font.family: Theme.font
+                                                font.pixelSize: 12
+                                                elide: Text.ElideRight
+                                            }
+
+                                            Text {
+                                                width: parent.width
+                                                text: `${vpnRow.modelData.type.toUpperCase()} \u00b7 ${vpnRow.modelData.active ? "UP" : "DOWN"}`
+                                                color: vpnRow.modelData.active ? Theme.lime : Theme.faint
+                                                font.family: Theme.fontMono
+                                                font.pixelSize: 9
+                                                font.letterSpacing: Theme.trackingWide
+                                            }
+                                        }
+
+                                        MouseArea {
+                                            id: vpnHover
+
+                                            anchors.fill: parent
+                                            hoverEnabled: true
+                                            cursorShape: Qt.PointingHandCursor
+                                            onClicked: Network.vpnToggle(vpnRow.modelData.name)
+                                        }
+                                    }
+                                }
+                            }
+
                         Repeater {
-                            model: Network.vpns
+                            model: Network.networks
 
                             Rectangle {
-                                id: vpnRow
+                                id: ap
 
                                 required property var modelData
 
-                                width: parent.width
-                                height: 44
-                                radius: Theme.radiusSm + 2
+                                readonly property bool expanded:
+                                    root.pendingSsid === modelData.ssid
 
-                                color: vpnRow.modelData.active
-                                    ? Theme.alpha(Theme.lime, 0.14)
-                                    : vpnHover.containsMouse
+                                width: parent.width
+                                height: expanded ? 66 : 32
+                                radius: Theme.radiusSm
+                                color: modelData.active
+                                    ? Theme.alpha(Theme.accent, 0.16)
+                                    : apMouse.containsMouse
                                         ? Theme.surfaceHover
                                         : Theme.alpha(Theme.surface, 0.7)
 
-                                border.width: 1
-                                border.color: vpnRow.modelData.active
-                                    ? Theme.alpha(Theme.lime, 0.35)
-                                    : Theme.rimSoft
-
+                                Behavior on height { Morph {} }
                                 Behavior on color { ColorAnimation { duration: Theme.animFast } }
 
-                                Text {
-                                    id: vpnIcon
-
+                                Row {
+                                    anchors.top: parent.top
                                     anchors.left: parent.left
-                                    anchors.leftMargin: 12
-                                    anchors.verticalCenter: parent.verticalCenter
-
-                                    text: vpnRow.modelData.active ? "\ue1ff" : "\ue158"
-                                    color: vpnRow.modelData.active ? Theme.lime : Theme.subtext
-                                    font.family: Theme.fontIcon
-                                    font.pixelSize: 14
-                                }
-
-                                Column {
-                                    anchors.left: vpnIcon.right
-                                    anchors.leftMargin: 12
                                     anchors.right: parent.right
-                                    anchors.rightMargin: 12
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 1
+                                    anchors.leftMargin: 10
+                                    anchors.rightMargin: 10
+                                    height: 32
+                                    spacing: 8
 
                                     Text {
-                                        width: parent.width
-                                        text: vpnRow.modelData.name
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        text: ap.modelData.secured ? "\ue10b" : "\ue1ae"
+                                        color: ap.modelData.active ? Theme.accent : Theme.faint
+                                        font.family: Theme.fontIcon
+                                        font.pixelSize: 12
+                                    }
+
+                                    Text {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        width: parent.width - 110
+                                        text: ap.modelData.ssid
                                         color: Theme.text
                                         font.family: Theme.font
-                                        font.pixelSize: 12
+                                        font.pixelSize: 11
                                         elide: Text.ElideRight
                                     }
 
                                     Text {
-                                        width: parent.width
-                                        text: `${vpnRow.modelData.type.toUpperCase()} \u00b7 ${vpnRow.modelData.active ? "UP" : "DOWN"}`
-                                        color: vpnRow.modelData.active ? Theme.lime : Theme.faint
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        text: `${ap.modelData.signal}%`
+                                        color: Theme.faint
                                         font.family: Theme.fontMono
                                         font.pixelSize: 9
-                                        font.letterSpacing: Theme.trackingWide
+                                    }
+
+                                    Text {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        text: "forget"
+                                        visible: ap.modelData.known
+                                        color: forgetMouse.containsMouse ? Theme.magenta : Theme.faint
+                                        font.family: Theme.fontMono
+                                        font.pixelSize: 9
+
+                                        MouseArea {
+                                            id: forgetMouse
+
+                                            anchors.fill: parent
+                                            anchors.margins: -5
+                                            hoverEnabled: true
+                                            cursorShape: Qt.PointingHandCursor
+                                            onClicked: Network.forget(ap.modelData.ssid)
+                                        }
                                     }
                                 }
 
                                 MouseArea {
-                                    id: vpnHover
+                                    id: apMouse
 
-                                    anchors.fill: parent
+                                    anchors.top: parent.top
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    height: 32
                                     hoverEnabled: true
                                     cursorShape: Qt.PointingHandCursor
-                                    onClicked: Network.vpnToggle(vpnRow.modelData.name)
+                                    z: -1
+
+                                    onClicked: {
+                                        if (ap.modelData.active)
+                                            return;
+                                        if (ap.modelData.known || !ap.modelData.secured) {
+                                            Network.connect(ap.modelData.ssid, "");
+                                            return;
+                                        }
+                                        root.pendingSsid = ap.expanded ? "" : ap.modelData.ssid;
+                                        pass.text = "";
+                                        if (root.pendingSsid !== "")
+                                            pass.forceActiveFocus();
+                                    }
+                                }
+
+                                Rectangle {
+                                    anchors.bottom: parent.bottom
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    anchors.margins: 6
+                                    height: 26
+                                    radius: Theme.radiusSm
+                                    color: Theme.alpha(Theme.surfaceAlt, 0.9)
+                                    visible: ap.expanded
+                                    clip: true
+
+                                    TextInput {
+                                        id: pass
+
+                                        anchors.fill: parent
+                                        anchors.leftMargin: 10
+                                        anchors.rightMargin: 10
+                                        verticalAlignment: TextInput.AlignVCenter
+
+                                        echoMode: TextInput.Password
+                                        color: Theme.text
+                                        font.family: Theme.font
+                                        font.pixelSize: 11
+                                        selectByMouse: true
+                                        selectionColor: Theme.alpha(Theme.accent, 0.35)
+
+                                        Text {
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            visible: pass.text === ""
+                                            text: "Password, enter to join"
+                                            color: Theme.faint
+                                            font: pass.font
+                                        }
+
+                                        onAccepted: {
+                                            Network.connect(ap.modelData.ssid, pass.text);
+                                            root.pendingSsid = "";
+                                        }
+
+                                        Keys.onEscapePressed: root.pendingSsid = ""
+                                    }
                                 }
                             }
                         }
                     }
-
-                Repeater {
-                    model: Network.networks
-
-                    Rectangle {
-                        id: ap
-
-                        required property var modelData
-
-                        readonly property bool expanded:
-                            root.pendingSsid === modelData.ssid
-
-                        width: parent.width
-                        height: expanded ? 66 : 32
-                        radius: Theme.radiusSm
-                        color: modelData.active
-                            ? Theme.alpha(Theme.accent, 0.16)
-                            : apMouse.containsMouse
-                                ? Theme.surfaceHover
-                                : Theme.alpha(Theme.surface, 0.7)
-
-                        Behavior on height { Morph {} }
-                        Behavior on color { ColorAnimation { duration: Theme.animFast } }
-
-                        Row {
-                            anchors.top: parent.top
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.leftMargin: 10
-                            anchors.rightMargin: 10
-                            height: 32
-                            spacing: 8
-
-                            Text {
-                                anchors.verticalCenter: parent.verticalCenter
-                                text: ap.modelData.secured ? "\ue10b" : "\ue1ae"
-                                color: ap.modelData.active ? Theme.accent : Theme.faint
-                                font.family: Theme.fontIcon
-                                font.pixelSize: 12
-                            }
-
-                            Text {
-                                anchors.verticalCenter: parent.verticalCenter
-                                width: parent.width - 110
-                                text: ap.modelData.ssid
-                                color: Theme.text
-                                font.family: Theme.font
-                                font.pixelSize: 11
-                                elide: Text.ElideRight
-                            }
-
-                            Text {
-                                anchors.verticalCenter: parent.verticalCenter
-                                text: `${ap.modelData.signal}%`
-                                color: Theme.faint
-                                font.family: Theme.fontMono
-                                font.pixelSize: 9
-                            }
-
-                            Text {
-                                anchors.verticalCenter: parent.verticalCenter
-                                text: "forget"
-                                visible: ap.modelData.known
-                                color: forgetMouse.containsMouse ? Theme.magenta : Theme.faint
-                                font.family: Theme.fontMono
-                                font.pixelSize: 9
-
-                                MouseArea {
-                                    id: forgetMouse
-
-                                    anchors.fill: parent
-                                    anchors.margins: -5
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: Network.forget(ap.modelData.ssid)
-                                }
-                            }
-                        }
-
-                        MouseArea {
-                            id: apMouse
-
-                            anchors.top: parent.top
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            height: 32
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            z: -1
-
-                            onClicked: {
-                                if (ap.modelData.active)
-                                    return;
-                                if (ap.modelData.known || !ap.modelData.secured) {
-                                    Network.connect(ap.modelData.ssid, "");
-                                    return;
-                                }
-                                root.pendingSsid = ap.expanded ? "" : ap.modelData.ssid;
-                                pass.text = "";
-                                if (root.pendingSsid !== "")
-                                    pass.forceActiveFocus();
-                            }
-                        }
-
-                        Rectangle {
-                            anchors.bottom: parent.bottom
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.margins: 6
-                            height: 26
-                            radius: Theme.radiusSm
-                            color: Theme.alpha(Theme.surfaceAlt, 0.9)
-                            visible: ap.expanded
-                            clip: true
-
-                            TextInput {
-                                id: pass
-
-                                anchors.fill: parent
-                                anchors.leftMargin: 10
-                                anchors.rightMargin: 10
-                                verticalAlignment: TextInput.AlignVCenter
-
-                                echoMode: TextInput.Password
-                                color: Theme.text
-                                font.family: Theme.font
-                                font.pixelSize: 11
-                                selectByMouse: true
-                                selectionColor: Theme.alpha(Theme.accent, 0.35)
-
-                                Text {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    visible: pass.text === ""
-                                    text: "Password, enter to join"
-                                    color: Theme.faint
-                                    font: pass.font
-                                }
-
-                                onAccepted: {
-                                    Network.connect(ap.modelData.ssid, pass.text);
-                                    root.pendingSsid = "";
-                                }
-
-                                Keys.onEscapePressed: root.pendingSsid = ""
-                            }
-                        }
-                    }
-                }
-            }
                 }
 
                 Column {
@@ -980,100 +980,101 @@ PanelWindow {
                         title: "Session"
                     }
 
-            Column {
-                id: powerList
-
-                width: parent.width
-                spacing: 6
-
-                property string armed: ""
-
-                Repeater {
-                    model: [
-                        { key: "lock", glyph: "\ue10b", name: "Lock", tint: Theme.accent, cmd: ["sh", "-c", "loginctl lock-session || hyprlock"], confirm: false },
-                        { key: "suspend", glyph: "\ue11e", name: "Suspend", tint: Theme.accent, cmd: ["systemctl", "suspend"], confirm: false },
-                        { key: "logout", glyph: "\ue10e", name: "Log out", tint: Theme.subtext, cmd: [], confirm: true },
-                        { key: "reboot", glyph: "\ue149", name: "Restart", tint: Theme.amber, cmd: ["systemctl", "reboot"], confirm: true },
-                        { key: "off", glyph: "\ue140", name: "Shut down", tint: Theme.red, cmd: ["systemctl", "poweroff"], confirm: true }
-                    ]
-
-                    Rectangle {
-                        id: powerBtn
-
-                        required property var modelData
-
-                        readonly property bool armed: powerList.armed === modelData.key
+                    Column {
+                        id: powerList
 
                         width: parent.width
-                        height: 38
-                        radius: Theme.radiusSm
+                        spacing: 6
 
-                        color: armed
-                            ? Theme.alpha(modelData.tint, 0.3)
-                            : pw.containsMouse
-                                ? Theme.surfaceHover
-                                : Theme.alpha(Theme.surface, 0.85)
+                        property string armed: ""
 
-                        Behavior on color { ColorAnimation { duration: Theme.animFast } }
+                        Repeater {
+                            model: [
+                                { key: "lock", glyph: "\ue10b", name: "Lock", tint: Theme.accent, cmd: ["sh", "-c", "loginctl lock-session || hyprlock"], confirm: false },
+                                { key: "suspend", glyph: "\ue11e", name: "Suspend", tint: Theme.accent, cmd: ["systemctl", "suspend"], confirm: false },
+                                { key: "logout", glyph: "\ue10e", name: "Log out", tint: Theme.subtext, cmd: [], confirm: true },
+                                { key: "reboot", glyph: "\ue149", name: "Restart", tint: Theme.amber, cmd: ["systemctl", "reboot"], confirm: true },
+                                { key: "off", glyph: "\ue140", name: "Shut down", tint: Theme.red, cmd: ["systemctl", "poweroff"], confirm: true }
+                            ]
 
-                        Row {
-                            anchors.left: parent.left
-                            anchors.leftMargin: 12
-                            anchors.verticalCenter: parent.verticalCenter
-                            spacing: 10
+                            Rectangle {
+                                id: powerBtn
 
-                            Text {
-                                anchors.verticalCenter: parent.verticalCenter
-                                text: powerBtn.modelData.glyph
-                                color: pw.containsMouse || powerBtn.armed
-                                    ? powerBtn.modelData.tint
-                                    : Theme.subtext
-                                font.family: Theme.fontIcon
-                                font.pixelSize: 15
-                            }
+                                required property var modelData
 
-                            Text {
-                                anchors.verticalCenter: parent.verticalCenter
-                                text: powerBtn.armed
-                                    ? "Click again to confirm"
-                                    : powerBtn.modelData.name
-                                color: powerBtn.armed ? powerBtn.modelData.tint : Theme.text
-                                font.family: Theme.font
-                                font.pixelSize: 12
-                            }
-                        }
+                                readonly property bool armed: powerList.armed === modelData.key
 
-                        MouseArea {
-                            id: pw
+                                width: parent.width
+                                height: 38
+                                radius: Theme.radiusSm
 
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
+                                color: armed
+                                    ? Theme.alpha(modelData.tint, 0.3)
+                                    : pw.containsMouse
+                                        ? Theme.surfaceHover
+                                        : Theme.alpha(Theme.surface, 0.85)
 
-                            onClicked: {
-                                if (powerBtn.modelData.confirm && !powerBtn.armed) {
-                                    powerList.armed = powerBtn.modelData.key;
-                                    disarm.restart();
-                                    return;
+                                Behavior on color { ColorAnimation { duration: Theme.animFast } }
+
+                                Row {
+                                    anchors.left: parent.left
+                                    anchors.leftMargin: 12
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: 10
+
+                                    Text {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        text: powerBtn.modelData.glyph
+                                        color: pw.containsMouse || powerBtn.armed
+                                            ? powerBtn.modelData.tint
+                                            : Theme.subtext
+                                        font.family: Theme.fontIcon
+                                        font.pixelSize: 15
+                                    }
+
+                                    Text {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        text: powerBtn.armed
+                                            ? "Click again to confirm"
+                                            : powerBtn.modelData.name
+                                        color: powerBtn.armed ? powerBtn.modelData.tint : Theme.text
+                                        font.family: Theme.font
+                                        font.pixelSize: 12
+                                    }
                                 }
-                                powerList.armed = "";
-                                Globals.controlCenter = false;
-                                if (powerBtn.modelData.cmd.length === 0)
-                                    Hyprland.dispatch("hl.dsp.exit()");
-                                else
-                                    Quickshell.execDetached(powerBtn.modelData.cmd);
-                            }
-                        }
 
-                        Timer {
-                            id: disarm
-                            interval: 3000
-                            onTriggered: powerList.armed = ""
+                                MouseArea {
+                                    id: pw
+
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+
+                                    onClicked: {
+                                        if (powerBtn.modelData.confirm && !powerBtn.armed) {
+                                            powerList.armed = powerBtn.modelData.key;
+                                            disarm.restart();
+                                            return;
+                                        }
+                                        powerList.armed = "";
+                                        Globals.controlCenter = false;
+                                        if (powerBtn.modelData.cmd.length === 0)
+                                            Hyprland.dispatch("hl.dsp.exit()");
+                                        else
+                                            Quickshell.execDetached(powerBtn.modelData.cmd);
+                                    }
+                                }
+
+                                Timer {
+                                    id: disarm
+                                    interval: 3000
+                                    onTriggered: powerList.armed = ""
+                                }
+                            }
                         }
                     }
                 }
-            }
-                }
+
                 Column {
                     id: btPage
 
