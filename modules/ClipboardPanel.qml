@@ -317,7 +317,7 @@ PanelWindow {
 
                         Text {
                             width: parent.width
-                            text: row.modelData.split("\n")[0]
+                            text: row.modelData.slice(0, 300).split("\n")[0]
                             color: Theme.text
                             font.family: Theme.font
                             font.pixelSize: 12
@@ -328,7 +328,7 @@ PanelWindow {
                             width: parent.width
                             visible: text !== ""
                             text: {
-                                const lines = row.modelData.split("\n").length;
+                                const lines = (row.modelData.match(/\n/g) || []).length + 1;
                                 const chars = row.modelData.length;
                                 return lines > 1
                                     ? `${lines} LINES · ${chars} CHARS`

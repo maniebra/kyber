@@ -40,8 +40,6 @@ Singleton {
         onTriggered: store.setText(JSON.stringify(root.history))
     }
 
-    property bool muted: false
-
     function remember(entry) {
         const text = entry.replace(/\n+$/, "");
         if (text.trim() === "")
@@ -52,11 +50,25 @@ Singleton {
         root.history = next.slice(0, root.limit);
     }
 
+    // Piped through stdin: argv caps a single argument at 128 KiB.
+    // The watcher echoes this copy back, but remember() dedupes it.
     function copy(text) {
-        root.muted = true;
-        unmute.restart();
-        Quickshell.execDetached(["wl-copy", "--", text]);
+        writer.pending = text;
+        writer.stdinEnabled = true;
+        writer.running = true;
         root.remember(text);
+    }
+
+    Process {
+        id: writer
+
+        property string pending
+
+        command: ["wl-copy"]
+        onStarted: {
+            writer.write(writer.pending);
+            writer.stdinEnabled = false;
+        }
     }
 
     function forget(text) {
@@ -67,24 +79,27 @@ Singleton {
         root.history = [];
     }
 
-    Timer {
-        id: unmute
-
-        interval: 400
-        onTriggered: root.muted = false
-    }
-
+    // wl-paste --watch dies when the compositor drops the data-control
+    // client or a read fails; without a restart history silently freezes.
     Process {
+        id: watcher
+
         running: true
+        // timeout: a hung source app would otherwise block every later read
         command: ["wl-paste", "--type", "text", "--watch",
-                  "sh", "-c", "wl-paste --no-newline --type text; printf '\\0'"]
+                  "sh", "-c", "timeout 2 wl-paste --no-newline --type text; printf '\\0'"]
+        onExited: respawn.restart()
 
         stdout: SplitParser {
             splitMarker: String.fromCharCode(0)
-            onRead: data => {
-                if (!root.muted)
-                    root.remember(data);
-            }
+            onRead: data => root.remember(data)
         }
+    }
+
+    Timer {
+        id: respawn
+
+        interval: 1000
+        onTriggered: watcher.running = true
     }
 }
