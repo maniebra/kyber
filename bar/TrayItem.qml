@@ -1,5 +1,4 @@
 import Quickshell
-import Quickshell.Io
 import Quickshell.Widgets
 import QtQuick
 
@@ -31,11 +30,6 @@ Rectangle {
 
         trayItem: root.item
         anchorItem: root
-    }
-
-    IpcHandler {
-        target: "traytest"
-        function open(): void { console.log("TT", root.item.id, menu.open, menu.visible); if (root.item.id === "Throne") menu.toggle(); console.log("TT after", menu.open, menu.visible, menu.hide); }
     }
 
     MouseArea {

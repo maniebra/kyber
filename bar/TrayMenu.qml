@@ -36,7 +36,7 @@ PopupWindow {
     anchor.rect.y: anchorItem.height + 8
     anchor.edges: Edges.Bottom | Edges.Right
     anchor.gravity: Edges.Bottom | Edges.Left
-    grabFocus: false
+    grabFocus: true
 
     readonly property bool hasChecks: {
         const entries = opener.children.values;
