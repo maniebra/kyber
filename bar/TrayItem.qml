@@ -25,6 +25,13 @@ Rectangle {
         glyph: ""
     }
 
+    TrayMenu {
+        id: menu
+
+        trayItem: root.item
+        anchorItem: root
+    }
+
     MouseArea {
         id: mouse
 
@@ -34,10 +41,14 @@ Rectangle {
         acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
 
         onClicked: mouse => {
-            if (mouse.button === Qt.MiddleButton)
+            const wantsMenu = mouse.button === Qt.RightButton || root.item.onlyMenu;
+            if (wantsMenu && root.item.hasMenu) {
+                menu.toggle();
+            } else if (mouse.button === Qt.MiddleButton) {
                 root.item.secondaryActivate();
-            else
+            } else {
                 root.item.activate();
+            }
         }
     }
 }
