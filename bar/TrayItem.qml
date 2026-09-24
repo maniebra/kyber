@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Io
 import Quickshell.Widgets
 import QtQuick
 
@@ -14,7 +15,7 @@ Rectangle {
     height: 20
     radius: Theme.radiusSm
 
-    color: mouse.containsMouse ? Theme.surfaceHover : "transparent"
+    color: mouse.containsMouse || menu.open ? Theme.surfaceHover : "transparent"
     Behavior on color { ColorAnimation { duration: Theme.animFast } }
 
     AppIcon {
@@ -30,6 +31,11 @@ Rectangle {
 
         trayItem: root.item
         anchorItem: root
+    }
+
+    IpcHandler {
+        target: "traytest"
+        function open(): void { console.log("TT", root.item.id, menu.open, menu.visible); if (root.item.id === "Throne") menu.toggle(); console.log("TT after", menu.open, menu.visible, menu.hide); }
     }
 
     MouseArea {
