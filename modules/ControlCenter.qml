@@ -158,6 +158,7 @@ PanelWindow {
                     root.page === 1 ? wifiPage
                     : root.page === 2 ? powerPage
                     : root.page === 3 ? btPage
+                    : root.page === 4 ? audioPage
                     : mainPage
 
                 height: current.implicitHeight
@@ -386,9 +387,13 @@ PanelWindow {
                                 width: parent.width - 20
                                 icon: Audio.micMuted ? "" : ""
                                 label: "Microphone"
-                                sublabel: Audio.micMuted ? "Muted" : "Live"
+                                sublabel: Audio.micMuted
+                                    ? "Muted"
+                                    : Audio.nodeLabel(Audio.source)
                                 active: !Audio.micMuted
+                                hasPage: true
                                 onToggled: Audio.toggleMic()
+                                onOpened: root.page = 4
                             }
                         }
                     }
@@ -1371,6 +1376,120 @@ PanelWindow {
                             }
                         }
                     }
+
+                    Column {
+                        id: audioPage
+
+                        width: viewport.width
+                        spacing: 12
+
+                        PageHeader {
+                            width: parent.width
+                            title: "Audio devices"
+                        }
+
+                        Column {
+                            width: parent.width
+                            spacing: 6
+
+                            Text {
+                                text: "OUTPUT"
+                                color: Theme.faint
+                                font.family: Theme.fontMono
+                                font.pixelSize: 9
+                                font.letterSpacing: Theme.trackingWide
+                            }
+
+                            Repeater {
+                                model: Audio.sinks
+
+                                DeviceRow {
+                                    width: parent.width
+                                    current: Audio.sink
+                                    onPicked: n => Audio.setSink(n)
+                                }
+                            }
+
+                            Item { width: 1; height: 4 }
+
+                            Text {
+                                text: "INPUT"
+                                color: Theme.faint
+                                font.family: Theme.fontMono
+                                font.pixelSize: 9
+                                font.letterSpacing: Theme.trackingWide
+                            }
+
+                            Repeater {
+                                model: Audio.sources
+
+                                DeviceRow {
+                                    width: parent.width
+                                    current: Audio.source
+                                    onPicked: n => Audio.setSource(n)
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+
+
+            // Row in the audio device page
+            component DeviceRow: Rectangle {
+                id: dev
+
+                required property var modelData
+                property var current
+                signal picked(var node)
+
+                readonly property bool selected: modelData === current
+
+                height: 40
+                radius: Theme.radiusSm + 2
+                color: dev.selected
+                    ? Theme.alpha(Theme.accent, 0.14)
+                    : devMouse.containsMouse
+                        ? Theme.surfaceHover
+                        : Theme.alpha(Theme.surface, 0.7)
+                border.width: 1
+                border.color: dev.selected ? Theme.alpha(Theme.accent, 0.35) : Theme.rimSoft
+
+                Behavior on color { ColorAnimation { duration: Theme.animFast } }
+
+                Text {
+                    id: devIcon
+
+                    anchors.left: parent.left
+                    anchors.leftMargin: 12
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: dev.selected ? "\ue0f7" : "\ue0f8"
+                    color: dev.selected ? Theme.accent : Theme.subtext
+                    font.family: Theme.fontIcon
+                    font.pixelSize: 14
+                }
+
+                Text {
+                    anchors.left: devIcon.right
+                    anchors.leftMargin: 12
+                    anchors.right: parent.right
+                    anchors.rightMargin: 12
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: Audio.nodeLabel(dev.modelData)
+                    color: dev.selected ? Theme.text : Theme.subtext
+                    font.family: Theme.font
+                    font.pixelSize: 12
+                    elide: Text.ElideRight
+                }
+
+                MouseArea {
+                    id: devMouse
+
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: dev.picked(dev.modelData)
                 }
             }
 

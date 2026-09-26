@@ -9,6 +9,22 @@ Singleton {
     readonly property PwNode sink: Pipewire.defaultAudioSink
     readonly property PwNode source: Pipewire.defaultAudioSource
 
+    readonly property var sinks: Pipewire.nodes.values.filter(n => n.isSink && !n.isStream)
+    readonly property var sources: Pipewire.nodes.values.filter(
+        n => !n.isSink && n.audio && !n.isStream)
+
+    function nodeLabel(n) {
+        return n?.description || n?.nickname || n?.name || "Unknown";
+    }
+
+    function setSink(n) {
+        Pipewire.preferredDefaultAudioSink = n;
+    }
+
+    function setSource(n) {
+        Pipewire.preferredDefaultAudioSource = n;
+    }
+
     readonly property real volume: sink?.audio?.volume ?? 0
     readonly property bool muted: sink?.audio?.muted ?? false
     readonly property bool micMuted: source?.audio?.muted ?? true
@@ -48,5 +64,9 @@ Singleton {
 
     PwObjectTracker {
         objects: [root.sink, root.source]
+    }
+
+    PwObjectTracker {
+        objects: Pipewire.nodes.values
     }
 }
